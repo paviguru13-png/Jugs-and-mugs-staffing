@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#11100e"><title>Jugs & Mugs Staff Hub</title>
+<style>
+:root{color-scheme:dark;--bg:#10100f;--panel:#191816;--gold:#c9a45b;--gold2:#e5c77f;--muted:#a7a198;--line:#39352e;--white:#f7f3eb}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0%,#292318,transparent 48%),var(--bg);color:var(--white);font:15px/1.5 system-ui,sans-serif}
+.shell{min-height:100vh;display:grid;place-items:center;padding:22px}.login{width:min(100%,430px);padding:32px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(145deg,#1c1a16,#141311);box-shadow:0 24px 80px #0008}
+.mark{width:56px;height:56px;border:1px solid var(--gold);border-radius:15px;display:grid;place-items:center;color:var(--gold2);font-weight:800;font-size:22px;margin-bottom:22px}
+.eyebrow{color:var(--gold);text-transform:uppercase;letter-spacing:2.5px;font-size:10px;font-weight:700}h1{font-size:28px;line-height:1.2;margin:8px 0}.sub{color:var(--muted);margin:0 0 26px}
+.field{display:grid;gap:7px;margin:16px 0}.field label{font-size:12px;color:#d5cec1}.field input{width:100%;background:#100f0d;border:1px solid var(--line);border-radius:10px;padding:14px;color:var(--white);outline:none}.field input:focus{border-color:var(--gold)}
+button{font:inherit;cursor:pointer}.primary{width:100%;border:0;border-radius:10px;padding:14px;background:linear-gradient(100deg,#b38b43,#e0c27b);color:#17130c;font-weight:800;margin-top:8px}
+.error{color:#ff9e8f;font-size:13px;min-height:20px}.note{color:var(--muted);font-size:12px;text-align:center;margin-top:20px}
+.app{display:none;min-height:100vh}.top{height:70px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 max(18px,calc((100vw - 1080px)/2));background:#141310}
+.brand{display:flex;align-items:center;gap:12px}.brand .mark{width:38px;height:38px;margin:0;border-radius:10px;font-size:16px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:1.5px}
+.logout{background:transparent;border:1px solid var(--line);color:var(--white);padding:9px 14px;border-radius:9px}.content{max-width:1080px;margin:auto;padding:28px 18px}
+.welcome{margin-bottom:22px}.welcome h1{margin:5px 0}.welcome p{margin:0;color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tile,.section{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:19px}.tile small{color:var(--muted)}.tile strong{display:block;font-size:28px;color:var(--gold2);margin-top:7px}
+.section{margin-top:17px}.section h2{font-size:17px;margin:0 0 12px}.empty{padding:24px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px}
+.event{padding:13px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px}.event:first-child{border-top:0}.event b{display:block}.event small{color:var(--muted)}.tag{color:var(--gold2);font-size:11px;border:1px solid #6c5835;border-radius:20px;padding:4px 9px;height:max-content}
+@media(max-width:600px){.login{padding:26px 21px}.grid{grid-template-columns:1fr 1fr}.content{padding:22px 14px}}@media(max-width:370px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="shell" id="loginView"><main class="login"><div class="mark">JM</div><div class="eyebrow">Jugs & Mugs · Operations</div><h1>Staff Hub</h1><p class="sub">Your events. Your team. One place.</p>
+<form id="loginForm"><div class="field"><label for="employee">EMPLOYEE ID</label><input id="employee" autocomplete="username" placeholder="Enter employee ID" required></div><div class="field"><label for="pin">6-DIGIT PIN</label><input id="pin" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="current-password" placeholder="••••••" required></div><div class="error" id="loginError" role="alert"></div><button class="primary" id="loginButton">Sign in</button></form><p class="note">Authorised captains and owner only</p></main></div>
+<div class="app" id="appView"><header class="top"><div class="brand"><div class="mark">JM</div><div><b>JUGS & MUGS</b><small>STAFF HUB</small></div></div><button class="logout" id="logoutButton">Sign out</button></header>
+<main class="content"><div class="welcome"><div class="eyebrow" id="roleLabel">OPERATIONS</div><h1 id="welcomeTitle">Welcome</h1><p id="welcomeSub">Your event overview</p></div>
+<div class="grid"><div class="tile"><small>Upcoming events</small><strong id="upcomingCount">—</strong></div><div class="tile"><small>Assigned events</small><strong id="assignedCount">—</strong></div><div class="tile"><small>Team attendance</small><strong>—</strong></div></div>
+<section class="section"><h2>Upcoming events</h2><div id="eventsList" class="empty">Loading your events…</div></section></main></div>
+<script type="module">
+import {createClient} from 'https://esm.sh/@supabase/supabase-js@2';
+const supabase=createClient('https://mpldvaspvabmckwpucmq.supabase.co','sb_publishable_Yp9AT55mG0iJlWOoazEvrw_Lj6UrIpU');
+const $=id=>document.getElementById(id);
+function showLogin(){$('appView').style.display='none';$('loginView').style.display='grid'}
+async function dashboard(){
+ const {data:{user}}=await supabase.auth.getUser();if(!user){showLogin();return}
+ const {data:p,error}=await supabase.from('staff_profiles').select('id,employee_id,full_name,role,is_active').eq('id',user.id).single();
+ if(error||!p||!p.is_active){await supabase.auth.signOut();$('loginError').textContent='Staff profile unavailable. Contact the owner.';showLogin();return}
+ $('loginView').style.display='none';$('appView').style.display='block';$('welcomeTitle').textContent='Hello, '+p.full_name.split(' ')[0];
+ $('roleLabel').textContent=p.role==='owner'?'OWNER DASHBOARD':'CAPTAIN DASHBOARD';$('welcomeSub').textContent=p.role==='owner'?'Manage your events and team.':'Your assigned events';
+ let q=supabase.from('events').select('id,event_name,venue,event_date,guest_count,status,confirmation_status').gte('event_date',new Date().toISOString().slice(0,10)).neq('status','cancelled').order('event_date').limit(30);
+ if(p.role==='captain'){const {data:a}=await supabase.from('event_assignments').select('event_id').eq('captain_id',p.id);const ids=(a||[]).map(x=>x.event_id);q=ids.length?q.in('id',ids):null}
+ const {data:events,error:e}=q?await q:{data:[],error:null};const list=$('eventsList');
+ if(e){list.textContent='Unable to load events. Check access policies.';return}
+ $('upcomingCount').textContent=events.length;$('assignedCount').textContent=p.role==='owner'?'All':events.length;
+ if(!events.length){list.className='empty';list.textContent='No upcoming events assigned.';return}
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ list.className='';list.innerHTML=events.map(v=>'<div class="event"><div><b>'+esc(v.event_name)+'</b><small>'+esc(v.venue||'Venue pending')+' · '+new Date(v.event_date+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})+' · '+(v.guest_count??0)+' guests</small></div><span class="tag">'+esc(v.confirmation_status||v.status||'Scheduled')+'</span></div>').join('');
+}
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginError').textContent='';$('loginButton').disabled=true;$('loginButton').textContent='Signing in…';
+ try{const {data,error}=await supabase.functions.invoke('staff-pin-auth',{body:{action:'login',employee_id:$('employee').value.trim(),pin:$('pin').value}});
+ if(error||!data?.token_hash)throw new Error(data?.error||'Invalid employee ID or PIN');
+ const {error:authError}=await supabase.auth.verifyOtp({token_hash:data.token_hash,type:'magiclink'});if(authError)throw authError;await dashboard();
+ }catch(err){$('loginError').textContent=err.message||'Sign in failed'}finally{$('loginButton').disabled=false;$('loginButton').textContent='Sign in'}});
+$('logoutButton').addEventListener('click',async()=>{await supabase.auth.signOut();showLogin()});
+const {data:{session}}=await supabase.auth.getSession();if(session)await dashboard();
+</script></body></html>
