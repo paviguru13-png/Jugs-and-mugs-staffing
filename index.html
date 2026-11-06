@@ -28,7 +28,7 @@ button:disabled{opacity:.55;cursor:wait}.error{color:#ff9e8f;font-size:13px;min-
 .staff-row{display:grid;grid-template-columns:1fr 145px;gap:10px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}.staff-row:first-child{border-top:0}
 .staff-row select{background:#100f0d;border:1px solid var(--line);color:var(--white);padding:9px;border-radius:8px;width:100%}.staff-meta{font-size:11px;color:var(--muted)}
 .staff-add{display:grid;grid-template-columns:1fr 160px;gap:9px}.staff-tools{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.staff-tools .primary{width:auto;min-width:160px}
-.status-good{color:#9ed6a7}.status-wait{color:var(--gold2)}@media(max-width:650px){.admin-grid,.form-grid{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}.event{align-items:flex-start}.event-actions{max-width:55%}.content{padding:18px 12px}.login{padding:24px 19px}}
+.status-good{color:#9ed6a7}.status-wait{color:var(--gold2)}.wage-row{display:grid;grid-template-columns:minmax(0,1fr) 110px 120px;gap:9px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}.wage-row input,.wage-row select{width:100%;min-width:0;background:#100f0d;border:1px solid var(--line);color:var(--white);padding:10px;border-radius:8px}.wage-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}.wage-summary div{background:#100f0d;border:1px solid var(--line);border-radius:9px;padding:10px}.wage-summary small{display:block;color:var(--muted);font-size:11px}.wage-summary b{display:block;color:var(--gold2);font-size:18px;margin-top:3px}@media(max-width:500px){.wage-row{grid-template-columns:1fr 1fr}.wage-row .wage-person{grid-column:1/-1}.wage-summary{grid-template-columns:1fr}}@media(max-width:650px){.admin-grid,.form-grid{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}.event{align-items:flex-start}.event-actions{max-width:55%}.content{padding:18px 12px}.login{padding:24px 19px}}
 @media(max-width:500px){.staff-row,.staff-add{grid-template-columns:1fr}.staff-tools .primary{width:100%}}@media(max-width:370px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -80,6 +80,18 @@ button:disabled{opacity:.55;cursor:wait}.error{color:#ff9e8f;font-size:13px;min-
     <div class="staff-tools hidden" id="captainSubmitWrap"><button class="primary" id="submitAttendanceButton">Submit attendance</button></div>
     <div class="staff-tools hidden" id="ownerApproveWrap"><button class="primary" id="approveAttendanceButton">Approve attendance</button></div><p class="muted" id="approvalStatus"></p>
    </section>
+   <section class="section hidden" id="wagesSection">
+    <h2>Staff wages &amp; payments</h2>
+    <p class="muted">Set each team member’s event wage and mark whether it has been paid.</p>
+    <div class="wage-summary">
+     <div><small>Total wages</small><b id="wageTotal">₹0</b></div>
+     <div><small>Paid</small><b id="wagePaid">₹0</b></div>
+     <div><small>Pending</small><b id="wagePending">₹0</b></div>
+    </div>
+    <div id="wageRoster" class="empty">Loading wages…</div>
+    <div class="notice" id="wageNotice"></div>
+    <button class="primary" id="saveWagesButton">Save wages &amp; payment status</button>
+   </section>
   </section>
  </main>
 </div>
@@ -104,6 +116,7 @@ async function init(){
   $('addStaffButton').addEventListener('click',addStaff);
   $('submitAttendanceButton').addEventListener('click',submitAttendance);
   $('approveAttendanceButton').addEventListener('click',approveAttendance);
+  $('saveWagesButton').addEventListener('click',saveWages);
   const {data:{session},error}=await sb.auth.getSession();
   if(error)throw error;
   if(session)await dashboard();
@@ -149,6 +162,8 @@ function openEvent(id){
  $('homeView').classList.add('hidden');$('eventDetail').classList.remove('hidden');$('detailName').textContent=v.event_name;
  $('detailInfo').innerHTML=[['Venue',v.venue],['Date',new Date(v.event_date+'T00:00:00').toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'})],['Reporting time',v.reporting_time?(v.reporting_time.slice(0,5)):'Not set'],['Guest count',v.guest_count??'—'],['Status',v.confirmation_status||v.status||'Scheduled']].map(x=>`<div class="detail-line"><span>${esc(x[0])}</span><b>${esc(x[1]??'—')}</b></div>`).join('');
  loadEventStaff(v.id);
+ $('wagesSection').classList.toggle('hidden',profile.role!=='owner');
+ if(profile.role==='owner')loadWages(v.id);
 }
 async function loadEventStaff(eventId){
  const owner=profile.role==='owner';$('staffAddWrap').classList.remove('hidden');$('captainSubmitWrap').classList.toggle('hidden',owner);$('ownerApproveWrap').classList.toggle('hidden',!owner);
@@ -207,6 +222,62 @@ async function createCaptain(e){
  try{const {data,error}=await sb.functions.invoke('staff-pin-auth',{body:{action:'create_captain',full_name:$('captainName').value.trim(),employee_id:$('captainEmployee').value.trim(),email:$('captainEmail').value.trim(),pin:$('captainPin').value}});if(error||!data?.success)throw Error(data?.error||error?.message||'Could not create captain');showError('captainNotice','Captain created. Share employee ID and PIN privately.');$('captainForm').reset();await loadCaptains();}
  catch(err){showError('captainNotice',err.message);}finally{btn.disabled=false;}
 }
+
+function moneyINR(value){return '₹'+Number(value||0).toLocaleString('en-IN',{maximumFractionDigits:2});}
+async function loadWages(eventId){
+ if(profile?.role!=='owner')return;
+ $('wageRoster').className='empty';$('wageRoster').textContent='Loading wages…';showError('wageNotice','');
+ const [staffRes,wageRes]=await Promise.all([
+  sb.from('event_staff').select('id,staff_name,staff_category').eq('event_id',eventId).order('created_at'),
+  sb.from('event_wages').select('id,event_staff_id,amount,payment_status,paid_at,notes').eq('event_id',eventId)
+ ]);
+ if(staffRes.error||wageRes.error){$('wageRoster').textContent=(staffRes.error||wageRes.error).message;return;}
+ const staff=staffRes.data||[],wages=new Map((wageRes.data||[]).map(w=>[w.event_staff_id,w]));
+ if(!staff.length){$('wageRoster').className='empty';$('wageRoster').textContent='Add event staff first to enter wages.';updateWageTotals();return;}
+ $('wageRoster').className='';
+ $('wageRoster').innerHTML=staff.map(person=>{
+  const wage=wages.get(person.id),amount=wage?.amount??'';
+  const status=wage?.payment_status==='paid'?'paid':'pending';
+  return `<div class="wage-row" data-wage-staff="${person.id}">
+   <div class="wage-person"><b>${esc(person.staff_name)}</b><div class="staff-meta">${esc(categoryName(person.staff_category))}</div></div>
+   <input type="number" min="0" step="0.01" inputmode="decimal" placeholder="₹ Wage" aria-label="Wage for ${esc(person.staff_name)}" data-wage-amount value="${esc(amount)}">
+   <select data-wage-status aria-label="Payment status for ${esc(person.staff_name)}"><option value="pending" ${status==='pending'?'selected':''}>Pending</option><option value="paid" ${status==='paid'?'selected':''}>Paid</option></select>
+  </div>`;
+ }).join('');
+ $('wageRoster').querySelectorAll('[data-wage-amount],[data-wage-status]').forEach(el=>el.addEventListener('input',updateWageTotals));
+ updateWageTotals();
+}
+function updateWageTotals(){
+ const rows=[...document.querySelectorAll('[data-wage-staff]')];
+ let total=0,paid=0;
+ rows.forEach(row=>{
+  const amount=Math.max(0,Number(row.querySelector('[data-wage-amount]').value)||0);
+  total+=amount;if(row.querySelector('[data-wage-status]').value==='paid')paid+=amount;
+ });
+ $('wageTotal').textContent=moneyINR(total);
+ $('wagePaid').textContent=moneyINR(paid);
+ $('wagePending').textContent=moneyINR(total-paid);
+}
+async function saveWages(){
+ if(profile?.role!=='owner'||!activeEvent)return;
+ const rows=[...document.querySelectorAll('[data-wage-staff]')];
+ const btn=$('saveWagesButton');btn.disabled=true;showError('wageNotice','Saving wages…');
+ try{
+  const payload=rows.filter(row=>row.querySelector('[data-wage-amount]').value.trim()!=='').map(row=>{
+   const amount=Number(row.querySelector('[data-wage-amount]').value);
+   if(!Number.isFinite(amount)||amount<0)throw Error('Enter a valid non-negative wage for every staff member.');
+   const payment_status=row.querySelector('[data-wage-status]').value;
+   return {event_id:activeEvent.id,event_staff_id:row.dataset.wageStaff,amount,payment_status,paid_at:payment_status==='paid'?new Date().toISOString():null,entered_by:profile.id,approved_by:profile.id};
+  });
+  if(!payload.length)throw Error('Enter at least one staff wage before saving.');
+  const {error}=await sb.from('event_wages').upsert(payload,{onConflict:'event_id,event_staff_id'});
+  if(error)throw error;
+  showError('wageNotice','Wages and payment statuses saved successfully.');
+  await loadWages(activeEvent.id);
+ }catch(e){showError('wageNotice',e.message||'Could not save wages.');}
+ finally{btn.disabled=false;}
+}
+
 init();
 </script>
 </body>
