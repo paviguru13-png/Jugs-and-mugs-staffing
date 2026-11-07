@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "Jugs & Mugs Staff Hub",
+  "short_name": "JM Staff",
+  "description": "Jugs & Mugs staff attendance and event operations",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#11100e",
+  "theme_color": "#11100e",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
