@@ -2,6 +2,7 @@
   "id": "./",
   "name": "Jugs & Mugs Staff Hub",
   "short_name": "JM Staff",
+  "description": "Jugs & Mugs staff attendance and event operations",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -10,15 +11,15 @@
   "theme_color": "#11100e",
   "icons": [
     {
-      "src": "./icon.svg",
+      "src": "./icon-192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icon.svg",
+      "src": "./icon-512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     }
   ]
