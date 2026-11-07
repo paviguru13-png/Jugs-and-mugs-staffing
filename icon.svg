@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="110" fill="#11100e"/>
+  <rect x="55" y="55" width="402" height="402" rx="85"
+        fill="none" stroke="#D8B96E" stroke-width="9"/>
+  <text x="256" y="300" text-anchor="middle"
+        font-family="Arial,sans-serif" font-size="150"
+        font-weight="bold" fill="#E5C77D">JM</text>
+</svg>
