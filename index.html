@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#11100e">
+<title>Jugs & Mugs Staff Hub</title>
+<style>
+:root{color-scheme:dark;--bg:#10100f;--panel:#191816;--gold:#c9a45b;--gold2:#e5c77f;--muted:#aaa398;--line:#39352e;--white:#f7f3eb}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0%,#292318,transparent 48%),var(--bg);color:var(--white);font:15px/1.5 system-ui,sans-serif}
+button,input,select{font:inherit}.shell{min-height:100vh;display:grid;place-items:center;padding:20px}.login{width:min(100%,480px);padding:30px;border:1px solid var(--line);border-radius:20px;background:#171613}
+.mark{width:60px;height:60px;border:1px solid var(--gold);border-radius:16px;display:grid;place-items:center;color:var(--gold2);font-weight:800;font-size:24px;margin-bottom:22px}
+.eyebrow{color:var(--gold);text-transform:uppercase;letter-spacing:2px;font-size:11px;font-weight:700}h1{font-size:30px;margin:8px 0}.sub,.muted{color:var(--muted)}.field{display:grid;gap:7px;margin:15px 0}.field label{font-size:12px;color:#d5cec1}
+.field input,.field select,.staff-add input,.staff-add select{width:100%;background:#100f0d;border:1px solid var(--line);border-radius:10px;padding:14px;color:var(--white);min-width:0}
+.primary{width:100%;border:0;border-radius:10px;padding:14px;background:linear-gradient(100deg,#b38b43,#e0c27b);color:#17130c;font-weight:800;margin-top:10px;cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}.error{color:#ff9e8f;font-size:13px;min-height:22px;margin-top:8px;overflow-wrap:anywhere}.note{text-align:center;color:var(--muted);font-size:12px;margin-top:18px}
+.app{display:none;min-height:100vh}.top{min-height:66px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:12px max(16px,calc((100vw - 1050px)/2));background:#141310}
+.brand{display:flex;align-items:center;gap:10px}.brand .mark{width:38px;height:38px;margin:0;font-size:15px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:1.5px}
+.logout,.action{background:transparent;border:1px solid var(--line);color:var(--white);padding:9px 12px;border-radius:8px;cursor:pointer}.content{max-width:1050px;margin:auto;padding:24px 16px}
+.welcome{margin-bottom:20px}.welcome h1{margin:5px 0}.welcome p{margin:0;color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.tile,.section{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:16px}.tile small{color:var(--muted)}.tile strong{display:block;font-size:27px;color:var(--gold2);margin-top:5px}
+.section{margin-top:15px}.section h2{font-size:17px;margin:0 0 12px}.empty{padding:20px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:9px}
+.admin-grid,.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}.admin-grid{gap:12px}.event{padding:13px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.event:first-child{border-top:0}.event b,.event small{display:block}.event small,.muted{color:var(--muted);font-size:12px}.tag{color:var(--gold2);font-size:11px;border:1px solid #6c5835;border-radius:20px;padding:4px 8px;white-space:nowrap}
+.event-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center}.action{color:var(--gold2);font-size:12px;margin:3px}.danger{color:#ffaaa0!important;border-color:#70413b!important}
+.notice{color:var(--gold2);font-size:13px;min-height:20px;margin:5px 0;overflow-wrap:anywhere}.hidden{display:none!important}.detail-line{padding:10px 0;border-bottom:1px solid var(--line)}
+.detail-line span{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px}.detail-line b{display:block;margin-top:3px}
+.staff-row{display:grid;grid-template-columns:1fr 145px;gap:10px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}.staff-row:first-child{border-top:0}
+.staff-row select{background:#100f0d;border:1px solid var(--line);color:var(--white);padding:9px;border-radius:8px;width:100%}.staff-meta{font-size:11px;color:var(--muted)}
+.staff-add{display:grid;grid-template-columns:1fr 160px;gap:9px}.staff-tools{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.staff-tools .primary{width:auto;min-width:160px}
+.status-good{color:#9ed6a7}.status-wait{color:var(--gold2)}.wage-row{display:grid;grid-template-columns:minmax(0,1fr) 110px 120px;gap:9px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}.wage-row input,.wage-row select{width:100%;min-width:0;background:#100f0d;border:1px solid var(--line);color:var(--white);padding:10px;border-radius:8px}.wage-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}.wage-summary div{background:#100f0d;border:1px solid var(--line);border-radius:9px;padding:10px}.wage-summary small{display:block;color:var(--muted);font-size:11px}.wage-summary b{display:block;color:var(--gold2);font-size:18px;margin-top:3px}.check-item{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}.check-item input{width:18px;height:18px;accent-color:#c9a45b;margin-top:2px;flex:none}.check-group{margin:14px 0}.check-group h3{font-size:13px;color:var(--gold2);margin:0 0 5px}.rating-stars{display:flex;gap:8px;flex-wrap:wrap}.rating-stars label{display:grid;place-items:center;border:1px solid var(--line);border-radius:9px;padding:9px 13px;cursor:pointer;color:var(--gold2)}.rating-stars input{accent-color:#c9a45b}.feedback-form textarea{width:100%;min-height:76px;background:#100f0d;border:1px solid var(--line);border-radius:9px;color:var(--white);padding:11px;resize:vertical}.score{color:var(--gold2);font-weight:800;font-size:18px}.map-frame{width:100%;height:260px;border:1px solid var(--line);border-radius:10px;background:#100f0d}.location-card{padding:12px 0;border-top:1px solid var(--line)}.location-card:first-child{border-top:0}.location-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.location-actions .action{display:inline-block;text-decoration:none}@media(max-width:500px){.wage-row{grid-template-columns:1fr 1fr}.wage-row .wage-person{grid-column:1/-1}.wage-summary{grid-template-columns:1fr}}@media(max-width:650px){.admin-grid,.form-grid{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}.event{align-items:flex-start}.event-actions{max-width:55%}.content{padding:18px 12px}.login{padding:24px 19px}}
+@media(max-width:500px){.staff-row,.staff-add{grid-template-columns:1fr}.staff-tools .primary{width:100%}}@media(max-width:370px){.grid{grid-template-columns:1fr}}
+.owner-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:18px 0}.owner-nav button{background:linear-gradient(145deg,#211e18,#151411);border:1px solid #40382b;border-radius:12px;color:#b9b1a4;padding:13px 8px;text-align:center;font-weight:750;cursor:pointer}.owner-nav button span{display:block;font-size:10px;letter-spacing:1px;color:#928777;margin-top:3px;font-weight:500}.owner-nav button.active{border-color:var(--gold);background:linear-gradient(145deg,#302719,#1b1812);color:var(--gold2);box-shadow:inset 0 0 0 1px #8d703c33}.owner-panel{min-width:0}.overview-hero{padding:18px;border:1px solid #51432b;border-radius:14px;background:linear-gradient(120deg,#282116,#171613 70%);margin:12px 0 16px}.overview-hero b{color:var(--gold2);font-size:17px}.overview-hero p{color:var(--muted);margin:5px 0 0;font-size:13px}.tile{background:linear-gradient(145deg,#201e1a,#171614);border-color:#403a31}.tile strong{font-size:30px}.owner-quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.owner-quick button{border:1px solid #80683e;color:var(--gold2);background:#211b12;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer}@media(max-width:600px){.owner-nav{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.owner-nav button{padding:11px 7px}}.event-tabs{display:flex;gap:8px;overflow-x:auto;margin:0 0 14px;padding-bottom:5px}.event-tab{flex:1;min-width:105px;background:#100f0d;border:1px solid var(--line);border-radius:10px;color:var(--muted);padding:11px 9px;cursor:pointer;font-weight:700}.event-tab b{display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:20px;background:#30291e;color:var(--gold2);margin-left:4px;font-size:11px}.event-tab.active{border-color:var(--gold);color:var(--gold2);background:#211c13}.event-state-note{font-size:11px;color:var(--muted);margin-top:4px}.event-actions{gap:3px}.complete-action{border-color:#496d50!important;color:#a9ddb0!important}.staff-photo-area{grid-column:1/-1;display:flex;gap:9px;align-items:center;flex-wrap:wrap;padding:7px 0 3px}.staff-photo-area input{max-width:100%;font-size:12px;color:var(--muted)}.staff-photo-grid{display:flex;gap:8px;flex-wrap:wrap}.staff-photo-grid a{display:block}.staff-photo-grid img{width:76px;height:76px;object-fit:cover;border-radius:9px;border:1px solid #61502f}.photo-hint{font-size:11px;color:var(--muted)}.report-event{border:1px solid var(--line);border-radius:11px;padding:12px;margin:10px 0;background:#12110f}.report-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.report-head b,.report-head small{display:block}.report-head small,.report-person small{display:block;color:var(--muted);font-size:11px}.report-stats{color:var(--gold2);font-size:12px;margin:10px 0}.report-person{display:flex;justify-content:space-between;gap:10px;align-items:center;border-top:1px solid var(--line);padding:9px 0}.report-person strong{color:var(--gold2);white-space:nowrap}.report-photos{display:flex;gap:6px;flex-wrap:wrap}.report-photos img{width:58px;height:58px;object-fit:cover;border-radius:7px;border:1px solid #61502f}@media(max-width:500px){.report-head,.report-person{align-items:flex-start}.report-person{flex-direction:column}.report-photos{margin-top:4px}}
+.captain-rating-summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 18px}.captain-rating-summary>div{background:#100f0d;border:1px solid var(--line);border-radius:11px;padding:14px}.captain-rating-summary small{display:block;color:var(--muted);font-size:11px}.captain-rating-summary strong{display:inline-block;color:var(--gold2);font-size:29px;margin-top:4px}.captain-rating-summary span{color:var(--muted);margin-left:4px}.rating-history-title{font-size:14px;margin:12px 0 4px;color:var(--gold2)}@media(max-width:420px){.captain-rating-summary{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div id="guestFeedbackPage" class="shell hidden"><main class="login"><div class="mark">JM</div><div class="eyebrow">Jugs &amp; Mugs · Guest feedback</div><h1>Share your experience</h1><p class="sub">Your feedback helps us improve our bar service.</p><form id="publicGuestFeedbackForm"><div class="field"><label>BAR SERVICE &amp; PRESENTATION</label><div class="rating-stars"><label><input type="radio" name="guestBarRating" value="1" required> 1</label><label><input type="radio" name="guestBarRating" value="2" required> 2</label><label><input type="radio" name="guestBarRating" value="3" required> 3</label><label><input type="radio" name="guestBarRating" value="4" required> 4</label><label><input type="radio" name="guestBarRating" value="5" required> 5</label></div></div><div class="field"><label>CAPTAIN SERVICE</label><div class="rating-stars"><label><input type="radio" name="guestCaptainRating" value="1" required> 1</label><label><input type="radio" name="guestCaptainRating" value="2" required> 2</label><label><input type="radio" name="guestCaptainRating" value="3" required> 3</label><label><input type="radio" name="guestCaptainRating" value="4" required> 4</label><label><input type="radio" name="guestCaptainRating" value="5" required> 5</label></div></div><div class="field"><label for="publicGuestComments">COMMENTS (OPTIONAL)</label><textarea id="publicGuestComments" placeholder="Tell us about your experience"></textarea></div><div id="publicGuestFeedbackNotice" class="notice"></div><button class="primary" id="publicGuestFeedbackSubmit" type="submit">Submit feedback</button></form></main></div>
+<div class="shell" id="loginView">
+ <main class="login">
+  <div class="mark">JM</div><div class="eyebrow">Jugs & Mugs · Operations</div><h1>Staff Hub</h1>
+  <p class="sub">Your events. Your team. One place.</p>
+  <form id="loginForm">
+   <div class="field"><label for="employee">EMPLOYEE ID</label><input id="employee" autocomplete="username" required inputmode="numeric" placeholder="Enter employee ID"></div>
+   <div class="field"><label for="pin">6-DIGIT PIN</label><input id="pin" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="current-password" required placeholder="••••••"></div>
+   <div class="error" id="loginError" role="alert"></div><button class="primary" id="loginButton" type="submit">Sign in</button>
+  </form><p class="note">Authorised captains and owner only</p>
+ </main>
+</div>
+<div class="app" id="appView">
+ <header class="top"><div class="brand"><div class="mark">JM</div><div><b>JUGS & MUGS</b><small>STAFF HUB</small></div></div><button class="logout" id="logoutButton">Sign out</button></header>
+ <main class="content">
+  <div class="welcome"><div class="eyebrow" id="roleLabel">OPERATIONS</div><h1 id="welcomeTitle">Welcome</h1><p id="welcomeSub"></p></div>
+  <div id="homeView">
+   <nav id="ownerNav" class="owner-nav hidden" aria-label="Owner dashboard sections"><button class="active" data-owner-panel="overview">OVERVIEW<span>Dashboard</span></button><button data-owner-panel="events">EVENTS<span>Manage events</span></button><button data-owner-panel="team">TEAM<span>Captains</span></button><button data-owner-panel="reports">REPORTS<span>Performance</span></button></nav>
+   <section id="captainOverviewPanel" class="section hidden">
+    <h2>My performance</h2>
+    <p class="muted">Your average guest rating from submitted event feedback.</p>
+    <div class="captain-rating-summary"><div><small>Average rating</small><strong id="myAverageRating">—</strong><span>/ 5</span></div><div><small>Events rated</small><strong id="myEventsRated">0</strong></div></div>
+    <h3 class="rating-history-title">Recent event ratings</h3>
+    <div id="myRatingHistory" class="empty">Loading your ratings…</div>
+   </section>
+   <div id="ownerOverviewPanel" class="owner-panel"><div class="overview-hero"><b>Operations at a glance</b><p>Your event pipeline, team activity and event closeouts in one place.</p><div class="owner-quick"><button type="button" id="quickCreateEvent">+ Create event</button><button type="button" id="quickViewEvents">View events</button></div></div>
+   <div class="grid"><div class="tile"><small>Upcoming events</small><strong id="upcomingCount">—</strong></div><div class="tile"><small>Assigned events</small><strong id="assignedCount">—</strong></div><div class="tile"><small>Completed events</small><strong id="completedOverviewCount">—</strong></div><div class="tile"><small>Cancelled events</small><strong id="cancelledOverviewCount">—</strong></div><div class="tile"><small>Team attendance</small><strong id="attendanceCount">—</strong></div></div>
+   </div>
+   <section class="section owner-panel hidden" id="ownerEventsPanel"><h2>Event management</h2>
+    <div class="event-tabs" id="eventTabs"><button class="event-tab active" data-event-tab="upcoming">Upcoming <b id="upcomingTabCount">0</b></button><button class="event-tab" data-event-tab="completed">Completed <b id="completedTabCount">0</b></button><button class="event-tab" data-event-tab="cancelled">Cancelled <b id="cancelledTabCount">0</b></button></div>
+    <div id="eventsList" class="empty">Loading…</div></section>
+   <div id="ownerTools" class="hidden">
+    <section class="section owner-panel hidden" id="ownerEventFormPanel"><h2 id="eventFormTitle">Create event</h2><form id="eventForm">
+      <input id="editEventId" type="hidden"><div class="field"><label for="eventName">EVENT NAME</label><input id="eventName" required></div>
+      <div class="field"><label for="eventVenue">VENUE NAME</label><input id="eventVenue" required></div>
+      <div class="field"><label for="venueMapsLink">GOOGLE MAPS VENUE LINK</label><input id="venueMapsLink" type="url" inputmode="url" placeholder="Paste Google Maps share link"><small class="muted">Paste the link from Google Maps → Share. We will find and save the venue coordinates automatically.</small></div><input id="venueLat" type="hidden"><input id="venueLng" type="hidden">
+      <div class="field"><label for="checkinRadius">CHECK-IN RADIUS (METRES)</label><input id="checkinRadius" type="number" min="50" max="1000" step="10" value="150" required></div>
+      <p class="muted">Enter the venue coordinates from Google Maps. Captain check-in will be allowed only inside this radius.</p>
+      <div class="form-grid"><div class="field"><label for="eventDate">EVENT DATE</label><input id="eventDate" type="date" required></div><div class="field"><label for="reportingTime">REPORTING TIME</label><input id="reportingTime" type="time"></div></div>
+      <div class="field"><label for="guestCount">GUEST COUNT</label><input id="guestCount" type="number" min="0" required></div>
+      <div class="field"><label for="eventCaptain">ASSIGN CAPTAIN</label><select id="eventCaptain"><option value="">No captain assigned</option></select></div>
+      <div class="notice" id="eventNotice"></div><button class="primary" id="saveEventButton" type="submit">Save event</button><button class="action hidden" type="button" id="cancelEditButton">Cancel edit</button>
+     </form></section>
+     <section class="section owner-panel hidden" id="ownerTeamPanel"><h2>Add captain</h2><form id="captainForm">
+      <div class="field"><label for="captainName">FULL NAME</label><input id="captainName" required></div>
+      <div class="field"><label for="captainEmployee">EMPLOYEE ID</label><input id="captainEmployee" required></div>
+      <div class="field"><label for="captainEmail">EMAIL</label><input id="captainEmail" type="email" required></div>
+      <div class="field"><label for="captainPin">TEMPORARY 6-DIGIT PIN</label><input id="captainPin" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required></div>
+      <div class="notice" id="captainNotice"></div><button class="primary" id="createCaptainButton" type="submit">Create captain</button><p class="muted">Maximum 10 active captains. Share login details privately.</p>
+     </form></section>
+    <section class="section owner-panel hidden" id="ownerCaptainAccountsPanel"><h2>Captain accounts</h2><div id="captainsList" class="empty">Loading…</div></section>
+    <section class="section owner-panel hidden" id="captainRatingsSection"><h2>1. Captain performance</h2><p class="muted">Average guest rating across submitted event feedback.</p><div id="captainRatingsList" class="empty">Loading ratings…</div></section>
+    <section class="section owner-panel hidden" id="attendanceReportsSection"><h2>2. Event-wise attendance &amp; photos</h2><p class="muted">Attendance status and captain-uploaded staff photos, grouped by event date.</p><div id="attendanceReportsList" class="empty">Loading attendance reports…</div></section>
+    <section class="section owner-panel hidden" id="wageReportsSection"><h2>3. Wages &amp; payments</h2><p class="muted">Event-wise wage totals, paid amounts and pending balances.</p><div id="wageReportsList" class="empty">Loading wage reports…</div></section>
+    <section class="section owner-panel hidden" id="guestFeedbackReportsSection"><h2>5. Guest feedback &amp; checkout</h2><p class="muted">One guest response per event, linked to the assigned captain.</p><div id="guestFeedbackReportsList" class="empty">Loading guest feedback…</div></section><section class="section owner-panel hidden" id="completedReportsSection"><h2>4. Completed events — datewise</h2><p class="muted">A chronological record of every event marked completed.</p><div id="completedReportsList" class="empty">Loading completed events…</div></section>
+   </div>
+  </div>
+  <section class="section hidden" id="eventDetail">
+   <button class="action" id="backButton">← Back to events</button><div class="eyebrow">EVENT DETAILS</div><h1 id="detailName"></h1><div id="detailInfo"></div>
+   <section class="section hidden" id="captainTrackingSection">
+    <h2>Captain check-in &amp; live location</h2>
+    <p class="muted">Check in as Present to start location sharing for this event. Keep this page open while on duty.</p>
+    <div class="notice" id="trackingStatus">Not checked in</div>
+    <div class="staff-tools"><button class="primary" id="captainCheckinButton">Check in — Present &amp; start tracking</button><button class="action danger hidden" id="captainStopTrackingButton">End event &amp; stop tracking</button></div>
+   </section>
+   <section class="section hidden" id="ownerTrackingSection">
+    <h2>Captain live location</h2><p class="muted">Latest available position for the captain assigned to this event.</p>
+    <div id="ownerTrackingMap" class="empty">No location received yet.</div>
+   </section>
+   <section class="section"><h2>Event staff attendance</h2><p class="muted" id="attendanceIntro">Add the team working at this event and record attendance.</p>
+    <div id="staffAddWrap" class="hidden"><div class="staff-add"><input id="newStaffName" placeholder="Staff full name"><select id="newStaffCategory"><option value="bartender">Bartender</option><option value="clearance_boy">Clearance staff</option><option value="other">Other staff</option></select></div><button class="primary" id="addStaffButton">+ Add staff member</button></div>
+    <div class="notice" id="staffNotice"></div><p class="photo-hint">CAPTAIN ONLY: take one clear photo of each staff member at the venue. The owner can review uploaded photos here.</p><div id="staffRoster" class="empty">Loading staff…</div>
+    <div class="staff-tools hidden" id="captainSubmitWrap"><button class="primary" id="submitAttendanceButton">Submit attendance</button></div>
+    <div class="staff-tools hidden" id="ownerApproveWrap"><button class="primary" id="approveAttendanceButton">Approve attendance</button></div><p class="muted" id="approvalStatus"></p>
+   </section>
+   <section class="section hidden" id="captainGuestCheckoutSection"><h2>Guest feedback &amp; checkout</h2><p class="muted">Complete your event closing tasks, then generate this event's guest QR code. Checkout unlocks after one guest submits feedback.</p><div id="guestCheckoutStatus" class="notice">Guest feedback not yet received.</div><div id="guestFeedbackQr" class="empty">Generate the event feedback QR when ready.</div><div class="staff-tools"><button class="primary" id="generateGuestQrButton">Generate guest feedback QR</button><button class="action" id="checkGuestFeedbackButton">Check feedback status</button><button class="primary" id="captainCheckoutButton" disabled>Complete captain checkout</button></div></section>
+   <section class="section hidden" id="captainChecklistSection">
+    <h2>Event closing checklist</h2>
+    <p class="muted">Complete each task and save your progress for this event.</p>
+    <div id="checklistProgress" class="notice">0 of 0 completed</div>
+    <div id="checklistItems"></div>
+    <div class="notice" id="checklistNotice"></div>
+   </section>
+   <section class="section hidden" id="feedbackSection">
+    <h2>Captain event closing report</h2>
+    <p class="muted">Internal event closing notes only. Guest ratings are collected separately through the event QR code.</p>
+    <form id="feedbackForm" class="feedback-form">
+     <div class="field"><label>OVERALL GUEST SATISFACTION</label>
+      <div class="rating-stars">
+       <label><input type="radio" name="overallRating" value="1" required> 1</label>
+       <label><input type="radio" name="overallRating" value="2"> 2</label>
+       <label><input type="radio" name="overallRating" value="3"> 3</label>
+       <label><input type="radio" name="overallRating" value="4"> 4</label>
+       <label><input type="radio" name="overallRating" value="5"> 5</label>
+      </div>
+     </div>
+     <div class="field"><label for="guestFeedback">OVERALL GUEST COMMENTS</label><textarea id="guestFeedback" placeholder="What did guests say about the overall experience?"></textarea></div>
+     <div class="field"><label for="serviceFeedback">BAR SERVICE &amp; PRESENTATION</label><textarea id="serviceFeedback" placeholder="Feedback on service, bartenders and presentation"></textarea></div>
+     <div class="field"><label for="guestComplaints">COMPLAINTS OR ISSUES</label><textarea id="guestComplaints" placeholder="Mention complaints or write None"></textarea></div>
+     <div class="field"><label for="guestSuggestions">SUGGESTIONS FOR IMPROVEMENT</label><textarea id="guestSuggestions" placeholder="Suggestions from guests"></textarea></div>
+     <div class="field"><label for="captainRemarks">CAPTAIN'S REMARKS</label><textarea id="captainRemarks" placeholder="Your event closing observations"></textarea></div>
+     <div class="notice" id="feedbackNotice"></div>
+     <button class="primary" id="saveFeedbackButton" type="submit">Submit overall feedback</button>
+    </form>
+    <div id="ownerFeedbackView" class="muted hidden"></div>
+   </section>
+   <section class="section hidden" id="wagesSection">
+    <h2>Staff wages &amp; payments</h2>
+    <p class="muted">Set each team member’s event wage and mark whether it has been paid.</p>
+    <div class="wage-summary">
+     <div><small>Total wages</small><b id="wageTotal">₹0</b></div>
+     <div><small>Paid</small><b id="wagePaid">₹0</b></div>
+     <div><small>Pending</small><b id="wagePending">₹0</b></div>
+    </div>
+    <div id="wageRoster" class="empty">Loading wages…</div>
+    <div class="notice" id="wageNotice"></div>
+    <button class="primary" id="saveWagesButton">Save wages &amp; payment status</button>
+   </section>
+  </section>
+ </main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script type="module">
+const $=id=>document.getElementById(id);
+const showError=(id,msg)=>{const el=$(id);if(el)el.textContent=msg||'Something went wrong.'};
+let sb,profile=null,eventsCache=[],activeEvent=null,trackingWatchId=null,lastLocationWrite=0,ownerLocationTimer=null;
+let ownerEventTab='upcoming';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const categoryName=c=>c==='bartender'?'Bartender':c==='clearance_boy'?'Clearance staff':'Other staff';
+function showLogin(){ $('appView').style.display='none';$('loginView').style.display='grid'; }
+function showApp(){ $('loginView').style.display='none';$('appView').style.display='block'; }
+function setOwnerPanel(name){
+ const panels={overview:['ownerOverviewPanel'],events:['ownerEventsPanel','ownerEventFormPanel'],team:['ownerTeamPanel','ownerCaptainAccountsPanel'],reports:['captainRatingsSection','attendanceReportsSection','wageReportsSection','completedReportsSection','guestFeedbackReportsSection']};
+ Object.values(panels).flat().forEach(id=>$(id)?.classList.add('hidden'));
+ (panels[name]||panels.overview).forEach(id=>$(id)?.classList.remove('hidden'));
+ $('ownerNav').querySelectorAll('[data-owner-panel]').forEach(b=>b.classList.toggle('active',b.dataset.ownerPanel===name));
+}
+async function init(){
+ try{
+  const {createClient}=await import('https://esm.sh/@supabase/supabase-js@2');
+  sb=createClient('https://mpldvaspvabmckwpucmq.supabase.co','sb_publishable_Yp9AT55mG0iJlWOoazEvrw_Lj6UrIpU');
+  $('loginForm').addEventListener('submit',login);
+  $('logoutButton').addEventListener('click',logout);
+  $('backButton').addEventListener('click',()=>{ $('eventDetail').classList.add('hidden');$('homeView').classList.remove('hidden');activeEvent=null; });
+  $('eventForm').addEventListener('submit',saveEvent);
+  $('captainForm').addEventListener('submit',createCaptain);
+  $('cancelEditButton').addEventListener('click',clearEvent);
+  $('addStaffButton').addEventListener('click',addStaff);
+  $('submitAttendanceButton').addEventListener('click',submitAttendance);
+  $('captainCheckinButton').addEventListener('click',startCaptainTracking);
+  $('captainStopTrackingButton').addEventListener('click',stopCaptainTracking);
+  $('generateGuestQrButton').addEventListener('click',generateGuestFeedbackQr);
+  $('checkGuestFeedbackButton').addEventListener('click',checkGuestFeedbackStatus);
+  $('captainCheckoutButton').addEventListener('click',completeCaptainCheckout);
+  $('approveAttendanceButton').addEventListener('click',approveAttendance);
+  $('saveWagesButton').addEventListener('click',saveWages);
+  $('feedbackForm').addEventListener('submit',saveEventFeedback);
+  $('ownerNav').querySelectorAll('[data-owner-panel]').forEach(b=>b.addEventListener('click',()=>setOwnerPanel(b.dataset.ownerPanel)));
+  $('quickCreateEvent').addEventListener('click',()=>{setOwnerPanel('events');$('eventForm').scrollIntoView({behavior:'smooth',block:'start'});});
+  $('quickViewEvents').addEventListener('click',()=>{setOwnerPanel('events');$('ownerEventsPanel').scrollIntoView({behavior:'smooth',block:'start'});});
+  const {data:{session},error}=await sb.auth.getSession();
+  if(error)throw error;
+  if(session)await dashboard();
+ }catch(e){showError('loginError','App startup error: '+(e.message||e));}
+}
+async function login(e){
+ e.preventDefault();showError('loginError','');
+ const btn=$('loginButton');btn.disabled=true;btn.textContent='Signing in…';
+ try{
+  const employee_id=$('employee').value.trim(),pin=$('pin').value.trim();
+  if(!employee_id||!/^[0-9]{6}$/.test(pin))throw Error('Enter your employee ID and 6-digit PIN.');
+  const {data,error}=await sb.functions.invoke('staff-pin-auth',{body:{action:'login',employee_id,pin}});
+  if(error)throw error;if(!data?.token_hash)throw Error(data?.error||'Login was not authorised. Check your details.');
+  const {error:verifyError}=await sb.auth.verifyOtp({token_hash:data.token_hash,type:'magiclink'});
+  if(verifyError)throw verifyError;
+  await dashboard();
+ }catch(err){showError('loginError',err.message||'Sign in failed. Please try again.');}
+ finally{btn.disabled=false;btn.textContent='Sign in';}
+}
+async function logout(){if(trackingWatchId!==null&&navigator.geolocation){navigator.geolocation.clearWatch(trackingWatchId);trackingWatchId=null;}if(ownerLocationTimer){clearInterval(ownerLocationTimer);ownerLocationTimer=null;}try{await sb.auth.signOut();}finally{profile=null;activeEvent=null;showLogin();}}
+async function dashboard(){
+ const {data:{user},error:userErr}=await sb.auth.getUser();if(userErr)throw userErr;
+ if(!user){showLogin();return;}
+ const {data:p,error}=await sb.from('staff_profiles').select('id,employee_id,full_name,role,is_active').eq('id',user.id).single();
+ if(error||!p||!p.is_active){await sb.auth.signOut();throw Error(error?.message||'Staff profile unavailable. Contact the owner.');}
+ profile=p;showApp();$('homeView').classList.remove('hidden');$('eventDetail').classList.add('hidden');
+ const owner=p.role==='owner';$('captainOverviewPanel').classList.toggle('hidden',owner);$('ownerOverviewPanel').classList.toggle('hidden',!owner);$('welcomeTitle').textContent='Hello, '+(p.full_name||'there').split(' ')[0];$('roleLabel').textContent=owner?'OWNER DASHBOARD':'CAPTAIN DASHBOARD';$('welcomeSub').textContent=owner?'Manage your events and team.':'Your assigned events';$('ownerTools').classList.toggle('hidden',!owner);$('ownerNav').classList.toggle('hidden',!owner);if(owner)setOwnerPanel('overview');else{$('ownerEventsPanel').classList.remove('hidden');$('eventTabs').classList.add('hidden');}
+ let q=sb.from('events').select('id,event_name,venue,venue_maps_url,venue_latitude,venue_longitude,checkin_radius_m,event_date,guest_count,reporting_time,status,confirmation_status').order('event_date',{ascending:false}).limit(100);
+ if(!owner){const {data:a,error:ae}=await sb.from('event_assignments').select('event_id').eq('captain_id',p.id);if(ae)throw ae;const ids=(a||[]).map(x=>x.event_id);q=ids.length?q.in('id',ids):null;}
+ const {data,error:e}=q?await q:{data:[],error:null};if(e)throw e;eventsCache=data||[];
+ const today=new Date().toLocaleDateString('en-CA');
+ const upcoming=eventsCache.filter(v=>v.status!=='cancelled'&&v.status!=='completed');
+ const completed=eventsCache.filter(v=>v.status==='completed');
+ const cancelled=eventsCache.filter(v=>v.status==='cancelled');
+ $('upcomingCount').textContent=upcoming.length;$('assignedCount').textContent=owner?'All':eventsCache.length;
+ $('upcomingTabCount').textContent=upcoming.length;$('completedTabCount').textContent=completed.length;$('cancelledTabCount').textContent=cancelled.length;$('completedOverviewCount').textContent=completed.length;$('cancelledOverviewCount').textContent=cancelled.length;
+ const tabs=$('eventTabs');tabs.classList.toggle('hidden',!owner);
+ if(owner){tabs.querySelectorAll('[data-event-tab]').forEach(b=>{b.classList.toggle('active',b.dataset.eventTab===ownerEventTab);b.onclick=()=>{ownerEventTab=b.dataset.eventTab;renderEventList();};});}
+ renderEventList();
+ if(!owner)await loadMyCaptainRating();
+ function renderEventList(){
+  const list=$('eventsList');
+  const rows=owner?(ownerEventTab==='upcoming'?upcoming:ownerEventTab==='completed'?completed:cancelled):eventsCache;
+  if(!rows.length){list.className='empty';list.textContent=owner?`No ${ownerEventTab} events.`:'No events assigned.';return;}
+  list.className='';list.innerHTML=rows.map(v=>`<div class="event"><div><b>${esc(v.event_name)}</b><small>${esc(v.venue||'Venue pending')} · ${new Date(v.event_date+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})} · ${v.guest_count??0} guests</small><div class="event-state-note">${v.status==='completed'?'Completed and closed':v.status==='cancelled'?'Cancelled':esc(v.confirmation_status||'Scheduled')}</div></div><div class="event-actions"><button class="action" data-open="${v.id}">Open</button>${owner&&v.status!=='completed'&&v.status!=='cancelled'?`<button class="action" data-edit="${v.id}">Edit</button>${v.confirmation_status!=='confirmed'?`<button class="action" data-confirm="${v.id}">Confirm</button>`:''}<button class="action complete-action" data-complete="${v.id}">Mark completed</button><button class="action danger" data-cancel="${v.id}">Cancel</button>`:''}</div></div>`).join('');
+  list.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>openEvent(b.dataset.open)));
+  if(owner){list.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>editEvent(b.dataset.edit)));list.querySelectorAll('[data-confirm]').forEach(b=>b.addEventListener('click',()=>confirmEvent(b.dataset.confirm)));list.querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click',()=>cancelEvent(b.dataset.cancel)));list.querySelectorAll('[data-complete]').forEach(b=>b.addEventListener('click',()=>completeEvent(b.dataset.complete)));}
+ }
+ if(owner){await loadCaptains();await loadCaptainRatings();await loadOwnerReports();}
+}
+function openEvent(id){
+ if(trackingWatchId!==null&&navigator.geolocation){navigator.geolocation.clearWatch(trackingWatchId);trackingWatchId=null;}
+ if(ownerLocationTimer){clearInterval(ownerLocationTimer);ownerLocationTimer=null;}
+ const v=eventsCache.find(x=>x.id===id);if(!v)return;activeEvent=v;
+ $('homeView').classList.add('hidden');$('eventDetail').classList.remove('hidden');$('detailName').textContent=v.event_name;
+ $('detailInfo').innerHTML=[['Venue',v.venue],['Date',new Date(v.event_date+'T00:00:00').toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'})],['Reporting time',v.reporting_time?(v.reporting_time.slice(0,5)):'Not set'],['Guest count',v.guest_count??'—'],['Status',v.confirmation_status||v.status||'Scheduled']].map(x=>`<div class="detail-line"><span>${esc(x[0])}</span><b>${esc(x[1]??'—')}</b></div>`).join('');
+ loadEventStaff(v.id);
+ $('captainTrackingSection').classList.toggle('hidden',profile.role==='owner');
+ $('ownerTrackingSection').classList.toggle('hidden',profile.role!=='owner');
+ if(profile.role==='owner'){loadOwnerCaptainLocation(v.id);ownerLocationTimer=setInterval(()=>{if(activeEvent?.id===v.id)loadOwnerCaptainLocation(v.id);},30000);}else loadCaptainTrackingState(v.id);
+ $('wagesSection').classList.toggle('hidden',profile.role!=='owner');
+ if(profile.role==='owner')loadWages(v.id);
+ $('captainChecklistSection').classList.toggle('hidden',profile.role==='owner');
+ $('captainGuestCheckoutSection').classList.toggle('hidden',profile.role==='owner');
+ if(profile.role!=='owner')loadGuestCheckoutState(v.id);
+ $('feedbackSection').classList.remove('hidden');
+ loadEventChecklist(v.id);
+ loadEventFeedback(v.id);
+}
+async function guestFeedbackAction(payload){
+ const {data:{session}}=await sb.auth.getSession();
+ const headers={'Content-Type':'application/json','apikey':'sb_publishable_Yp9AT55mG0iJlWOoazEvrw_Lj6UrIpU'};
+ if(session?.access_token)headers.Authorization='Bearer '+session.access_token;
+ const res=await fetch('https://mpldvaspvabmckwpucmq.supabase.co/functions/v1/event-guest-feedback',{method:'POST',headers,body:JSON.stringify(payload)});
+ const data=await res.json();if(!res.ok)throw new Error(data.error||'Guest feedback request failed.');return data;
+}
+async function generateGuestFeedbackQr(){
+ if(!activeEvent)return;const b=$('generateGuestQrButton');b.disabled=true;
+ try{
+  const total=checklistGroups.reduce((n,g)=>n+g.items.length,0),done=[...checklistRows.values()].filter(Boolean).length;
+  if(done!==total)throw Error(`Complete all event closing checklist tasks first (${done}/${total}).`);
+  const [staffRes,attendanceRes,closingRes]=await Promise.all([
+   sb.from('event_staff').select('id',{count:'exact',head:false}).eq('event_id',activeEvent.id),
+   sb.from('attendance_records').select('event_staff_id,submitted_by').eq('event_id',activeEvent.id).eq('submitted_by',profile.id),
+   sb.from('event_feedback').select('id').eq('event_id',activeEvent.id).eq('submitted_by',profile.id).maybeSingle()
+  ]);
+  const issue=[staffRes,attendanceRes,closingRes].find(x=>x.error);if(issue)throw issue.error;
+  if(!closingRes.data)throw Error('Submit your captain event closing report before generating the guest QR.');
+  const staffIds=(staffRes.data||[]).map(x=>x.id),submitted=new Set((attendanceRes.data||[]).map(x=>x.event_staff_id));
+  if(staffIds.some(id=>!submitted.has(id)))throw Error('Submit attendance for every staff member before generating the guest QR.');
+  const base=location.origin+location.pathname;const d=await guestFeedbackAction({action:'generate',event_id:activeEvent.id,base_url:base});
+ $('guestFeedbackQr').className='';$('guestFeedbackQr').innerHTML='<div id="guestQrCanvas" style="display:grid;place-items:center;padding:12px;background:#fff;border-radius:10px;max-width:280px;margin:10px auto"></div><p class="muted">Display this QR code to guests. One guest response is required before checkout.</p><button class="action" id="copyGuestFeedbackLink">Copy feedback link</button>';
+ new QRCode($('guestQrCanvas'),{text:d.feedback_url,width:240,height:240});$('copyGuestFeedbackLink').onclick=()=>navigator.clipboard?.writeText(d.feedback_url);
+ showError('guestCheckoutStatus','QR generated. Waiting for one guest feedback submission.');await checkGuestFeedbackStatus();
+ }catch(e){showError('guestCheckoutStatus',e.message);}finally{b.disabled=false;}
+}
+async function checkGuestFeedbackStatus(){if(!activeEvent)return;try{const d=await guestFeedbackAction({action:'status',event_id:activeEvent.id});$('captainCheckoutButton').disabled=!d.has_feedback||d.checked_out;$('captainCheckoutButton').textContent=d.checked_out?'Checked out ✓':'Complete captain checkout';if(d.checked_out){showError('guestCheckoutStatus','Captain checkout already completed.');$('generateGuestQrButton').disabled=true;$('checkGuestFeedbackButton').disabled=true;}else showError('guestCheckoutStatus',d.has_feedback?'Guest feedback received. Captain checkout is unlocked.':'Waiting for one guest feedback submission.');if(d.has_feedback&&!$('guestFeedbackQr').querySelector('.status-good'))$('guestFeedbackQr').insertAdjacentHTML('beforeend','<p class="status-good">Guest feedback received ✓</p>');}catch(e){showError('guestCheckoutStatus',e.message);}}
+async function loadGuestCheckoutState(eventId){$('captainCheckoutButton').disabled=true;$('guestFeedbackQr').className='empty';$('guestFeedbackQr').textContent='Generate the event feedback QR when ready.';showError('guestCheckoutStatus','Waiting for one guest feedback submission.');try{await checkGuestFeedbackStatus();}catch(_){}}
+async function completeCaptainCheckout(){if(!activeEvent)return;const b=$('captainCheckoutButton');b.disabled=true;try{await guestFeedbackAction({action:'checkout',event_id:activeEvent.id});if(trackingWatchId!==null&&navigator.geolocation){navigator.geolocation.clearWatch(trackingWatchId);trackingWatchId=null;}await sb.from('captain_live_locations').update({tracking_active:false,stopped_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('event_id',activeEvent.id).eq('captain_id',profile.id);showError('guestCheckoutStatus','Captain checkout completed successfully. Location sharing stopped.');$('generateGuestQrButton').disabled=true;$('checkGuestFeedbackButton').disabled=true;b.textContent='Checked out ✓';}catch(e){showError('guestCheckoutStatus',e.message);b.disabled=false;}}
+async function initPublicGuestFeedback(){
+ const params=new URLSearchParams(location.search),token=params.get('guest_feedback');if(!token)return false;
+ $('loginView').style.display='none';$('appView').style.display='none';$('guestFeedbackPage').classList.remove('hidden');
+ $('publicGuestFeedbackForm').addEventListener('submit',async e=>{e.preventDefault();const b=$('publicGuestFeedbackSubmit');b.disabled=true;showError('publicGuestFeedbackNotice','Submitting…');try{const bar=Number(document.querySelector('input[name="guestBarRating"]:checked')?.value),captain=Number(document.querySelector('input[name="guestCaptainRating"]:checked')?.value);const d=await fetch('https://mpldvaspvabmckwpucmq.supabase.co/functions/v1/event-guest-feedback',{method:'POST',headers:{'Content-Type':'application/json','apikey':'sb_publishable_Yp9AT55mG0iJlWOoazEvrw_Lj6UrIpU'},body:JSON.stringify({action:'submit',token,bar_service_rating:bar,captain_rating:captain,comments:$('publicGuestComments').value})});const result=await d.json();if(!d.ok)throw Error(result.error||'Could not submit feedback.');$('publicGuestFeedbackForm').classList.add('hidden');showError('publicGuestFeedbackNotice','Thank you! Your feedback has been submitted.');}catch(err){showError('publicGuestFeedbackNotice',err.message);b.disabled=false;}});return true;
+}
+
+function distanceMetres(lat1,lon1,lat2,lon2){
+ const rad=x=>x*Math.PI/180,R=6371000,dLat=rad(lat2-lat1),dLon=rad(lon2-lon1);
+ const a=Math.sin(dLat/2)**2+Math.cos(rad(lat1))*Math.cos(rad(lat2))*Math.sin(dLon/2)**2;
+ return 2*R*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+async function loadCaptainTrackingState(eventId){
+ const {data,error}=await sb.from('captain_live_locations').select('tracking_active,updated_at').eq('event_id',eventId).eq('captain_id',profile.id).maybeSingle();
+ if(error){showError('trackingStatus','Location status unavailable: '+error.message);return;}
+ const active=!!data?.tracking_active;
+ $('trackingStatus').textContent=active?'Tracking is active · Last update '+new Date(data.updated_at).toLocaleTimeString('en-IN'):'Not checked in for live tracking.';
+ $('captainCheckinButton').classList.toggle('hidden',active);
+ $('captainStopTrackingButton').classList.toggle('hidden',!active);
+ if(active)startGpsWatch(false);
+}
+async function startCaptainTracking(){
+ if(!activeEvent||profile.role==='owner')return;
+ if(!navigator.geolocation){showError('trackingStatus','This browser does not support location. Attendance remains available.');return;}
+ const btn=$('captainCheckinButton');btn.disabled=true;showError('trackingStatus','Requesting location permission…');
+ if(activeEvent.venue_latitude==null||activeEvent.venue_longitude==null){showError('trackingStatus','Check-in is not configured yet. Ask the owner to add the assigned venue coordinates.');btn.disabled=false;return;}
+ navigator.geolocation.getCurrentPosition(async pos=>{
+  try{
+   const distance=distanceMetres(pos.coords.latitude,pos.coords.longitude,Number(activeEvent.venue_latitude),Number(activeEvent.venue_longitude));
+   const radius=Number(activeEvent.checkin_radius_m)||150;
+   if(distance>radius){showError('trackingStatus',`You are outside the assigned venue check-in area. Distance: ${Math.round(distance)} m · Allowed: ${radius} m. Check-in denied.`);btn.disabled=false;return;}
+   if(pos.coords.accuracy>100){showError('trackingStatus',`GPS accuracy is too low (±${Math.round(pos.coords.accuracy)} m). Move outdoors and try again.`);btn.disabled=false;return;}
+   const point={event_id:activeEvent.id,captain_id:profile.id,latitude:pos.coords.latitude,longitude:pos.coords.longitude,accuracy_m:pos.coords.accuracy,tracking_active:true,started_at:new Date().toISOString(),updated_at:new Date().toISOString(),stopped_at:null};
+   const {error}=await sb.from('captain_live_locations').upsert(point,{onConflict:'event_id,captain_id'});if(error)throw error;
+   showError('trackingStatus','Checked in — Present. Live location sharing has started. Keep this page open.');
+   $('captainCheckinButton').classList.add('hidden');$('captainStopTrackingButton').classList.remove('hidden');
+   lastLocationWrite=Date.now();startGpsWatch(true);
+  }catch(e){showError('trackingStatus','Could not start tracking: '+e.message);}
+  finally{btn.disabled=false;}
+ },err=>{showError('trackingStatus','Location permission/location unavailable: '+err.message+'. You can still use attendance.');btn.disabled=false;},{enableHighAccuracy:true,timeout:20000,maximumAge:0});
+}
+function startGpsWatch(force){
+ if(!navigator.geolocation||trackingWatchId!==null)return;
+ trackingWatchId=navigator.geolocation.watchPosition(async pos=>{
+  if(!activeEvent||profile.role==='owner')return;
+  if(!force&&Date.now()-lastLocationWrite<60000)return;
+  if(Date.now()-lastLocationWrite<60000)return;
+  lastLocationWrite=Date.now();
+  const {error}=await sb.from('captain_live_locations').upsert({event_id:activeEvent.id,captain_id:profile.id,latitude:pos.coords.latitude,longitude:pos.coords.longitude,accuracy_m:pos.coords.accuracy,tracking_active:true,updated_at:new Date().toISOString(),stopped_at:null},{onConflict:'event_id,captain_id'});
+  if(error)showError('trackingStatus','GPS update failed: '+error.message);
+  else showError('trackingStatus','Live tracking active · Updated '+new Date().toLocaleTimeString('en-IN'));
+ },err=>showError('trackingStatus','GPS update paused: '+err.message+'. Keep location permission enabled.'),{enableHighAccuracy:true,maximumAge:15000,timeout:25000});
+}
+async function stopCaptainTracking(){
+ if(!activeEvent)return;
+ if(!confirm('End your event check-in and stop location sharing?'))return;
+ if(trackingWatchId!==null&&navigator.geolocation){navigator.geolocation.clearWatch(trackingWatchId);trackingWatchId=null;}
+ const {error}=await sb.from('captain_live_locations').update({tracking_active:false,stopped_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('event_id',activeEvent.id).eq('captain_id',profile.id);
+ if(error){showError('trackingStatus','Could not stop tracking: '+error.message);return;}
+ $('captainCheckinButton').classList.remove('hidden');$('captainStopTrackingButton').classList.add('hidden');showError('trackingStatus','Event check-in ended. Location sharing stopped.');
+}
+async function loadOwnerCaptainLocation(eventId){
+ const box=$('ownerTrackingMap');box.className='empty';box.textContent='Checking latest captain location…';
+ const {data:assignment,error:ae}=await sb.from('event_assignments').select('captain_id').eq('event_id',eventId).maybeSingle();
+ if(ae){box.textContent=ae.message;return;}if(!assignment?.captain_id){box.textContent='No captain assigned to this event.';return;}
+ const [locRes,capRes]=await Promise.all([sb.from('captain_live_locations').select('latitude,longitude,accuracy_m,tracking_active,updated_at,started_at,stopped_at').eq('event_id',eventId).eq('captain_id',assignment.captain_id).maybeSingle(),sb.from('staff_profiles').select('full_name').eq('id',assignment.captain_id).single()]);
+ if(locRes.error||capRes.error){box.textContent=(locRes.error||capRes.error).message;return;}
+ const loc=locRes.data;if(!loc||loc.latitude==null||loc.longitude==null){box.className='empty';box.textContent='Captain has not checked in or shared a location yet.';return;}
+ const maps=`https://www.google.com/maps?q=${encodeURIComponent(loc.latitude+','+loc.longitude)}`;
+ box.className='';box.innerHTML=`<div class="location-card"><b>${esc(capRes.data.full_name)}</b><div class="staff-meta">${loc.tracking_active?'Live sharing active':'Sharing stopped'} · Last update ${new Date(loc.updated_at).toLocaleString('en-IN')} · Accuracy ±${Math.round(loc.accuracy_m||0)} m</div><div class="location-actions"><a class="action" target="_blank" rel="noopener" href="${maps}">Open in Google Maps ↗</a><button class="action" id="refreshCaptainLocation">Refresh location</button></div></div><iframe class="map-frame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=${encodeURIComponent(loc.latitude+','+loc.longitude)}&z=15&output=embed" title="Captain location map"></iframe>`;
+ $('refreshCaptainLocation').addEventListener('click',()=>loadOwnerCaptainLocation(eventId));
+}
+
+async function loadEventStaff(eventId){
+ const owner=profile.role==='owner';$('staffAddWrap').classList.toggle('hidden',owner?false:false);$('captainSubmitWrap').classList.toggle('hidden',owner);$('ownerApproveWrap').classList.toggle('hidden',!owner);
+ showError('staffNotice','');$('staffRoster').className='empty';$('staffRoster').textContent='Loading staff…';
+ const [sr,ar,pr]=await Promise.all([
+  sb.from('event_staff').select('id,staff_name,staff_category,created_at').eq('event_id',eventId).order('created_at'),
+  sb.from('attendance_records').select('id,event_staff_id,status,submitted_by,approved_by,approved_at').eq('event_id',eventId),
+  sb.from('staff_attendance_photos').select('id,event_staff_id,storage_path,created_at').eq('event_id',eventId).order('created_at',{ascending:false})
+ ]);
+ if(sr.error||ar.error){$('staffRoster').textContent=(sr.error||ar.error).message;return;}
+ const staff=sr.data||[],records=ar.data||[],photos=pr.error?[]:(pr.data||[]),byStaff=new Map(records.map(r=>[r.event_staff_id,r]));
+ const photoUrls=new Map();
+ for(const photo of photos){const {data}=await sb.storage.from('staff-attendance-photos').createSignedUrl(photo.storage_path,3600);if(data?.signedUrl){if(!photoUrls.has(photo.event_staff_id))photoUrls.set(photo.event_staff_id,[]);photoUrls.get(photo.event_staff_id).push(data.signedUrl);}}
+ const pending=records.filter(r=>r.submitted_by&&!r.approved_by).length,approved=records.filter(r=>r.approved_by).length;
+ $('attendanceIntro').textContent=owner?'Review the roster, staff photos and approve the captain’s submitted attendance.':'Add the team members, take their venue photos, select attendance status, then submit.';
+ $('approvalStatus').textContent=approved?'Approved records: '+approved+(pending?' · Awaiting approval: '+pending:''):(pending?'Attendance submitted · Awaiting owner approval':'Attendance not yet submitted');
+ $('approvalStatus').className='muted '+(approved?'status-good':pending?'status-wait':'');
+ if(!staff.length){$('staffRoster').className='empty';$('staffRoster').textContent='No staff added to this event yet.';}
+ else{$('staffRoster').className='';$('staffRoster').innerHTML=staff.map(person=>{const rec=byStaff.get(person.id),status=rec?.status||'present',locked=!!rec?.approved_by,imgs=photoUrls.get(person.id)||[];return `<div class="staff-row"><div><b>${esc(person.staff_name)}</b><div class="staff-meta">${esc(categoryName(person.staff_category))}${locked?' · Approved':rec?.submitted_by?' · Submitted':' · Draft'}</div></div><select data-staff-status="${person.id}" ${owner||locked?'disabled':''}>${['present','absent','late','half_day'].map(x=>`<option value="${x}" ${status===x?'selected':''}>${({present:'Present',absent:'Absent',late:'Late',half_day:'Half day'})[x]}</option>`).join('')}</select><div class="staff-photo-area"><div class="staff-photo-grid">${imgs.map(url=>`<a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="Staff attendance photo" loading="lazy"></a>`).join('')}</div>${!owner?`<label class="photo-hint">📷 Take staff photo <input type="file" accept="image/*" capture="environment" data-staff-photo="${person.id}"></label>`:''}${!imgs.length&&owner?'<span class="photo-hint">No photo uploaded</span>':''}</div></div>`;}).join('');
+  $('staffRoster').querySelectorAll('[data-staff-photo]').forEach(input=>input.addEventListener('change',()=>uploadStaffPhoto(input)));
+ }
+ $('captainSubmitWrap').classList.toggle('hidden',owner||!staff.length||staff.every(p=>byStaff.get(p.id)?.approved_by));
+ $('ownerApproveWrap').classList.toggle('hidden',!owner||pending===0);
+}
+async function uploadStaffPhoto(input){
+ const file=input.files?.[0];if(!file||!activeEvent)return;
+ if(!file.type.startsWith('image/')){showError('staffNotice','Please select an image.');input.value='';return;}
+ if(file.size>5*1024*1024){showError('staffNotice','Photo must be 5 MB or smaller.');input.value='';return;}
+ if(profile.role!=='captain'){showError('staffNotice','Only the assigned captain can upload staff photos.');input.value='';return;}
+ const staffId=input.dataset.staffPhoto,ext=(file.type.split('/')[1]||'jpg').replace('jpeg','jpg').replace(/[^a-z0-9]/gi,'');
+ const path=`${activeEvent.id}/${profile.id}/${staffId}-${Date.now()}.${ext}`;
+ input.disabled=true;showError('staffNotice','Uploading staff photo…');
+ try{
+  const {error:upErr}=await sb.storage.from('staff-attendance-photos').upload(path,file,{contentType:file.type,upsert:false});if(upErr)throw upErr;
+  const {error:dbErr}=await sb.from('staff_attendance_photos').insert({event_id:activeEvent.id,event_staff_id:staffId,uploaded_by:profile.id,storage_path:path});
+  if(dbErr){await sb.storage.from('staff-attendance-photos').remove([path]);throw dbErr;}
+  showError('staffNotice','Staff photo uploaded successfully.');await loadEventStaff(activeEvent.id);
+ }catch(e){showError('staffNotice','Photo upload failed: '+(e.message||'Please try again.'));input.disabled=false;}
+}
+async function addStaff(){
+ const name=$('newStaffName').value.trim(),category=$('newStaffCategory').value;if(!activeEvent||!name){showError('staffNotice','Enter the staff member’s name.');return;}
+ const btn=$('addStaffButton');btn.disabled=true;try{const {error}=await sb.from('event_staff').insert({event_id:activeEvent.id,staff_name:name,staff_category:category,created_by:profile.id});if(error)throw error;$('newStaffName').value='';await loadEventStaff(activeEvent.id);}catch(e){showError('staffNotice',e.message);}finally{btn.disabled=false;}
+}
+async function submitAttendance(){
+ if(!activeEvent)return;
+ // Approved rows are disabled in the UI and must never be upserted again.
+ const rows=[...document.querySelectorAll('[data-staff-status]')].filter(el=>!el.disabled);
+ if(!rows.length){showError('staffNotice','There are no unapproved attendance records to submit.');return;}
+ const btn=$('submitAttendanceButton');btn.disabled=true;showError('staffNotice','Submitting attendance…');
+ try{
+  const payload=rows.map(el=>({event_id:activeEvent.id,event_staff_id:el.dataset.staffStatus,status:el.value,submitted_by:profile.id}));
+  const {error}=await sb.from('attendance_records').upsert(payload,{onConflict:'event_id,event_staff_id'});if(error)throw error;
+  showError('staffNotice','Attendance submitted to the owner for approval.');await loadEventStaff(activeEvent.id);
+ }catch(e){showError('staffNotice',e.message||'Could not submit attendance.');}finally{btn.disabled=false;}
+}
+async function approveAttendance(){
+ if(!activeEvent||!confirm('Approve the submitted attendance for this event?'))return;const btn=$('approveAttendanceButton');btn.disabled=true;showError('staffNotice','Approving…');
+ try{const {error}=await sb.from('attendance_records').update({approved_by:profile.id,approved_at:new Date().toISOString()}).eq('event_id',activeEvent.id).not('submitted_by','is',null).is('approved_by',null);if(error)throw error;showError('staffNotice','Attendance approved.');await loadEventStaff(activeEvent.id);}
+ catch(e){showError('staffNotice',e.message);}finally{btn.disabled=false;}
+}
+async function loadCaptains(){
+ const {data,error}=await sb.from('staff_profiles').select('id,full_name,employee_id,is_active').eq('role','captain').order('full_name');if(error){$('captainsList').textContent=error.message;return;}
+ const active=(data||[]).filter(x=>x.is_active);$('eventCaptain').innerHTML='<option value="">No captain assigned</option>'+active.map(x=>`<option value="${x.id}">${esc(x.full_name)} · ${esc(x.employee_id)}</option>`).join('');
+ $('captainsList').className=active.length?'':'empty';$('captainsList').innerHTML=active.map(c=>`<div class="event"><div><b>${esc(c.full_name)}</b><small>${esc(c.employee_id)} · Active</small></div></div>`).join('')||'No captains created yet.';
+}
+async function editEvent(id){
+ const v=eventsCache.find(x=>x.id===id);if(!v)return;const {data:assignment}=await sb.from('event_assignments').select('captain_id').eq('event_id',id).maybeSingle();
+ $('eventCaptain').value=assignment?.captain_id||'';$('editEventId').value=id;$('eventName').value=v.event_name;$('eventVenue').value=v.venue||'';$('venueLat').value=v.venue_latitude??'';$('venueLng').value=v.venue_longitude??'';$('venueMapsLink').value=v.venue_maps_url||'';$('checkinRadius').value=v.checkin_radius_m||150;$('eventDate').value=v.event_date;$('reportingTime').value=(v.reporting_time||'').slice(0,5);$('guestCount').value=v.guest_count??0;$('eventFormTitle').textContent='Edit event';$('saveEventButton').textContent='Update event';$('cancelEditButton').classList.remove('hidden');$('eventForm').scrollIntoView({behavior:'smooth'});
+}
+function clearEvent(){$('eventForm').reset();$('editEventId').value='';$('eventFormTitle').textContent='Create event';$('saveEventButton').textContent='Save event';$('cancelEditButton').classList.add('hidden');showError('eventNotice','');}
+async function saveEvent(e){
+ e.preventDefault();const btn=$('saveEventButton');btn.disabled=true;showError('eventNotice','Saving…');
+ try{const id=$('editEventId').value,{data:{user}}=await sb.auth.getUser();let lat=$('venueLat').value.trim(),lng=$('venueLng').value.trim();const mapsLink=$('venueMapsLink').value.trim();if(mapsLink){showError('eventNotice','Finding venue coordinates from Google Maps link…');const resolved=await sb.functions.invoke('resolve-maps-link',{body:{url:mapsLink}});if(resolved.error)throw Error(resolved.data?.error||resolved.error.message||'Could not resolve Google Maps link.');if(resolved.data?.error)throw Error(resolved.data.error);lat=String(resolved.data.latitude);lng=String(resolved.data.longitude);$('venueLat').value=lat;$('venueLng').value=lng;}if((lat==='')!==(lng===''))throw Error('Paste a Google Maps link to set the venue location.');if(lat!==''&&(!Number.isFinite(Number(lat))||!Number.isFinite(Number(lng))||Math.abs(Number(lat))>90||Math.abs(Number(lng))>180))throw Error('The Google Maps link did not provide valid coordinates.');if(!lat||!lng)throw Error('Add the Google Maps venue link before saving so captain check-in can be verified.');const radius=Number($('checkinRadius').value)||150;if(radius<50||radius>1000)throw Error('Check-in radius must be between 50 and 1000 metres.');const existing=id?eventsCache.find(v=>v.id===id):null;const row={event_name:$('eventName').value.trim(),venue:$('eventVenue').value.trim(),venue_maps_url:mapsLink||null,venue_latitude:Number(lat),venue_longitude:Number(lng),checkin_radius_m:radius,event_date:$('eventDate').value,reporting_time:$('reportingTime').value||null,guest_count:Number($('guestCount').value),status:existing?.status||'scheduled'};
+ const res=id?await sb.from('events').update(row).eq('id',id).select('id').single():await sb.from('events').insert({...row,created_by:user.id}).select('id').single();if(res.error)throw res.error;
+ const eid=id||res.data.id,cap=$('eventCaptain').value;const del=await sb.from('event_assignments').delete().eq('event_id',eid);if(del.error)throw del.error;if(cap){const add=await sb.from('event_assignments').insert({event_id:eid,captain_id:cap});if(add.error)throw add.error;}
+ clearEvent();await dashboard();
+ }catch(err){showError('eventNotice',err.message||'Could not save event.');}finally{btn.disabled=false;}
+}
+async function confirmEvent(id){if(!confirm('Confirm this event?'))return;try{const {data:{user}}=await sb.auth.getUser();const {error}=await sb.from('events').update({confirmation_status:'confirmed',confirmed_at:new Date().toISOString(),confirmed_by:user.id}).eq('id',id);if(error)throw error;await dashboard();}catch(e){alert(e.message);}}
+async function cancelEvent(id){if(!confirm('Cancel this event? Existing records will be retained.'))return;try{const {error}=await sb.from('events').update({status:'cancelled'}).eq('id',id);if(error)throw error;await dashboard();}catch(e){alert(e.message);}}
+async function completeEvent(id){const v=eventsCache.find(x=>x.id===id);if(!v)return;if(!confirm('Mark this event as COMPLETED? Confirm that attendance is checked, feedback is reviewed, captain checkout and checklist are complete, and wages/records are reviewed.'))return;try{const {error}=await sb.from('events').update({status:'completed'}).eq('id',id);if(error)throw error;ownerEventTab='completed';await dashboard();}catch(e){alert('Could not complete event: '+e.message);}}
+async function createCaptain(e){
+ e.preventDefault();const btn=$('createCaptainButton');btn.disabled=true;showError('captainNotice','Creating captain…');
+ try{const {data,error}=await sb.functions.invoke('staff-pin-auth',{body:{action:'create_captain',full_name:$('captainName').value.trim(),employee_id:$('captainEmployee').value.trim(),email:$('captainEmail').value.trim(),pin:$('captainPin').value}});if(error||!data?.success)throw Error(data?.error||error?.message||'Could not create captain');showError('captainNotice','Captain created. Share employee ID and PIN privately.');$('captainForm').reset();await loadCaptains();}
+ catch(err){showError('captainNotice',err.message);}finally{btn.disabled=false;}
+}
+
+
+const checklistGroups=[
+ {title:'Before leaving office',items:['Check event details, venue and reporting time','Verify signed indent and manpower list','Check bar equipment and tools','Check glassware and dispensers','Check cocktail and mocktail ingredients','Check garnishes, syrups and mixers','Check printed menus and signage','Confirm vehicle and loading time']},
+ {title:'Team and uniform',items:['Collect uniforms for all staff','Verify team attendance','Assign staff duties and bar stations','Brief team on event timings and service standards']},
+ {title:'At venue – setup',items:['Inspect assigned bar area','Set up bar counter and equipment','Arrange glassware and garnish station','Check water, mixers and ice','Test equipment before service','Get client approval before service']},
+ {title:'During event',items:['Monitor bar cleanliness and presentation','Monitor stock and replenishment','Maintain service quality','Report shortages or incidents to owner']},
+ {title:'After event',items:['Count and pack all equipment','Collect uniforms from all staff','Report missing or damaged items','Collect signed indent and manpower list','Collect overall guest feedback','Complete event feedback form','Confirm vehicle is fully loaded','Submit event closing report']}
+];
+let checklistRows=new Map();
+async function loadEventChecklist(eventId){
+ if(profile?.role==='owner')return;
+ $('checklistItems').innerHTML='Loading checklist…';
+ const {data,error}=await sb.from('event_checklist').select('checklist_key,completed').eq('event_id',eventId).eq('captain_id',profile.id);
+ if(error){$('checklistItems').textContent=error.message;return;}
+ checklistRows=new Map((data||[]).map(x=>[x.checklist_key,x.completed]));
+ $('checklistItems').innerHTML=checklistGroups.map((group,i)=>`<div class="check-group"><h3>${esc(group.title)}</h3>${group.items.map((label,j)=>{const key=`${i}-${j}`;return `<label class="check-item"><input type="checkbox" data-check-key="${key}" ${checklistRows.get(key)?'checked':''}><span>${esc(label)}</span></label>`;}).join('')}</div>`).join('');
+ $('checklistItems').querySelectorAll('[data-check-key]').forEach(el=>el.addEventListener('change',()=>saveChecklistItem(el)));
+ updateChecklistProgress();
+}
+async function saveChecklistItem(el){
+ const key=el.dataset.checkKey,completed=el.checked;
+ el.disabled=true;showError('checklistNotice','Saving checklist…');
+ try{
+  const {error}=await sb.from('event_checklist').upsert({event_id:activeEvent.id,captain_id:profile.id,checklist_key:key,completed,completed_at:completed?new Date().toISOString():null,updated_at:new Date().toISOString()},{onConflict:'event_id,checklist_key'});
+  if(error)throw error;checklistRows.set(key,completed);showError('checklistNotice','Checklist saved.');updateChecklistProgress();
+ }catch(e){el.checked=!completed;showError('checklistNotice',e.message||'Could not save checklist item.');}
+ finally{el.disabled=false;}
+}
+function updateChecklistProgress(){
+ const total=checklistGroups.reduce((n,g)=>n+g.items.length,0),done=[...checklistRows.values()].filter(Boolean).length;
+ $('checklistProgress').textContent=`${done} of ${total} tasks completed`;
+}
+async function loadEventFeedback(eventId){
+ $('feedbackNotice').textContent='';
+ $('ownerFeedbackView').classList.add('hidden');
+ const {data,error}=await sb.from('event_feedback').select('rating,comments,service_feedback,complaints,suggestions,captain_remarks,submitted_by,submitted_at').eq('event_id',eventId).maybeSingle();
+ if(error){showError('feedbackNotice',error.message);return;}
+ if(profile.role==='owner'){
+  $('feedbackForm').classList.add('hidden');
+  if(data){$('ownerFeedbackView').classList.remove('hidden');$('ownerFeedbackView').innerHTML=`<p><b>Overall rating:</b> <span class="score">${Number(data.rating).toFixed(1)} / 5</span></p><p><b>Guest comments:</b> ${esc(data.comments||'—')}</p><p><b>Service:</b> ${esc(data.service_feedback||'—')}</p><p><b>Complaints:</b> ${esc(data.complaints||'—')}</p><p><b>Suggestions:</b> ${esc(data.suggestions||'—')}</p><p><b>Captain remarks:</b> ${esc(data.captain_remarks||'—')}</p>`;}
+  else{$('ownerFeedbackView').classList.remove('hidden');$('ownerFeedbackView').textContent='No overall guest feedback submitted for this event yet.';}
+  return;
+ }
+ $('feedbackForm').classList.remove('hidden');
+ if(data){
+  const radio=$(`feedbackForm`).querySelector(`input[name="overallRating"][value="${data.rating}"]`);if(radio)radio.checked=true;
+  $('guestFeedback').value=data.comments||'';$('serviceFeedback').value=data.service_feedback||'';$('guestComplaints').value=data.complaints||'';$('guestSuggestions').value=data.suggestions||'';$('captainRemarks').value=data.captain_remarks||'';
+  $('saveFeedbackButton').textContent='Update overall feedback';
+ }else{
+  $('feedbackForm').reset();$('saveFeedbackButton').textContent='Submit overall feedback';
+ }
+}
+async function saveEventFeedback(e){
+ e.preventDefault();if(!activeEvent||profile?.role==='owner')return;
+ const rating=Number(document.querySelector('input[name="overallRating"]:checked')?.value);
+ if(!(rating>=1&&rating<=5)){showError('feedbackNotice','Please select an overall rating from 1 to 5.');return;}
+ const btn=$('saveFeedbackButton');btn.disabled=true;showError('feedbackNotice','Saving guest feedback…');
+ try{
+  const payload={event_id:activeEvent.id,submitted_by:profile.id,rating,comments:$('guestFeedback').value.trim(),service_feedback:$('serviceFeedback').value.trim(),complaints:$('guestComplaints').value.trim(),suggestions:$('guestSuggestions').value.trim(),captain_remarks:$('captainRemarks').value.trim(),submitted_at:new Date().toISOString()};
+  const {error}=await sb.from('event_feedback').upsert(payload,{onConflict:'event_id'});if(error)throw error;
+  showError('feedbackNotice','Internal event closing report saved. Guest QR feedback is recorded separately.');
+  btn.textContent='Update overall feedback';
+ }catch(err){showError('feedbackNotice',err.message||'Could not save guest feedback.');}
+ finally{btn.disabled=false;}
+}
+async function loadMyCaptainRating(){
+ const avg=$('myAverageRating'),count=$('myEventsRated'),history=$('myRatingHistory');
+ avg.textContent='—';count.textContent='0';history.className='empty';history.textContent='Loading your ratings…';
+ const {data,error}=await sb.from('guest_event_feedback').select('event_id,captain_rating,submitted_at').eq('captain_id',profile.id).order('submitted_at',{ascending:false});
+ if(error){history.textContent='Could not load your ratings: '+error.message;return;}
+ const rows=data||[];count.textContent=String(rows.length);
+ if(rows.length){const average=rows.reduce((sum,row)=>sum+Number(row.captain_rating||0),0)/rows.length;avg.textContent=average.toFixed(2);}
+ if(!rows.length){history.textContent='No guest ratings recorded yet. Your average will appear after event feedback is submitted.';return;}
+ const names=new Map(eventsCache.map(event=>[event.id,event]));
+ history.className='';history.innerHTML=rows.slice(0,8).map(row=>{const event=names.get(row.event_id);const date=row.submitted_at?new Date(row.submitted_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'Date unavailable';return `<div class="event"><div><b>${esc(event?.event_name||'Event feedback')}</b><small>${date}</small></div><div class="score">${Number(row.captain_rating).toFixed(1)} / 5</div></div>`;}).join('');
+}
+
+async function loadCaptainRatings(){
+ const box=$('captainRatingsList');if(!box)return;
+ const [captainsRes,feedbackRes]=await Promise.all([
+  sb.from('staff_profiles').select('id,full_name,employee_id').eq('role','captain').order('full_name'),
+  sb.from('guest_event_feedback').select('captain_id,captain_rating')
+ ]);
+ if(captainsRes.error||feedbackRes.error){box.textContent=(captainsRes.error||feedbackRes.error).message;return;}
+ const sums=new Map();
+ (feedbackRes.data||[]).forEach(row=>{if(row.captain_rating!=null){const s=sums.get(row.captain_id)||{sum:0,count:0};s.sum+=Number(row.captain_rating);s.count++;sums.set(row.captain_id,s);}});
+ const rows=(captainsRes.data||[]).map(c=>{const s=sums.get(c.id)||{sum:0,count:0};return `<div class="event"><div><b>${esc(c.full_name)}</b><small>${esc(c.employee_id)} · ${s.count} event${s.count===1?'':'s'} rated</small></div><div class="score">${s.count?(s.sum/s.count).toFixed(2)+' / 5':'—'}</div></div>`;});
+ box.className=rows.length?'':'empty';box.innerHTML=rows.join('')||'No captain accounts yet.';
+}
+
+
+async function loadOwnerReports(){
+ const attendanceBox=$('attendanceReportsList'),wageBox=$('wageReportsList'),completedBox=$('completedReportsList'),guestBox=$('guestFeedbackReportsList');
+ [attendanceBox,wageBox,completedBox,guestBox].forEach(x=>{x.className='empty';x.textContent='Loading…';});
+ const completed=eventsCache.filter(e=>e.status==='completed').sort((a,b)=>b.event_date.localeCompare(a.event_date));
+ if(!completed.length){attendanceBox.textContent='No completed events to report yet.';wageBox.textContent='No completed-event wage records yet.';completedBox.textContent='No completed events yet.';return;}
+ const ids=completed.map(e=>e.id);
+ const [staffRes,attRes,wageRes,photoRes,assignRes,guestRes]=await Promise.all([
+  sb.from('event_staff').select('id,event_id,staff_name,staff_category').in('event_id',ids).order('staff_name'),
+  sb.from('attendance_records').select('event_id,event_staff_id,status,submitted_by,approved_by,approved_at').in('event_id',ids),
+  sb.from('event_wages').select('event_id,event_staff_id,amount,payment_status,paid_at').in('event_id',ids),
+  sb.from('staff_attendance_photos').select('event_id,event_staff_id,storage_path,created_at').in('event_id',ids).order('created_at',{ascending:false}),
+  sb.from('event_assignments').select('event_id,captain_id').in('event_id',ids),
+  sb.from('guest_event_feedback').select('event_id,captain_id,bar_service_rating,captain_rating,comments,submitted_at').in('event_id',ids)
+ ]);
+ const err=[staffRes,attRes,wageRes,photoRes,assignRes,guestRes].find(r=>r.error);
+ if(err){attendanceBox.textContent='Could not load reports: '+err.error.message;wageBox.textContent='Could not load reports: '+err.error.message;completedBox.textContent='Could not load reports: '+err.error.message;return;}
+ const staff=staffRes.data||[],att=attRes.data||[],wages=wageRes.data||[],photos=photoRes.data||[],assign=assignRes.data||[],guestFeedback=guestRes.data||[];
+ const staffById=new Map(staff.map(x=>[x.id,x]));
+ const signed=new Map();
+ for(const photo of photos){const {data,error}=await sb.storage.from('staff-attendance-photos').createSignedUrl(photo.storage_path,3600);if(!error&&data?.signedUrl){if(!signed.has(photo.event_staff_id))signed.set(photo.event_staff_id,[]);signed.get(photo.event_staff_id).push(data.signedUrl);}}
+ const captainIds=[...new Set(assign.map(x=>x.captain_id).filter(Boolean))];let captainNames=new Map();
+ if(captainIds.length){const cr=await sb.from('staff_profiles').select('id,full_name').in('id',captainIds);if(!cr.error)captainNames=new Map((cr.data||[]).map(c=>[c.id,c.full_name]));}
+ const dateLabel=d=>new Date(d+'T00:00:00').toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+ guestBox.className='';guestBox.innerHTML=completed.map(ev=>{const f=guestFeedback.find(x=>x.event_id===ev.id);const cap=assign.find(x=>x.event_id===ev.id);return `<div class="report-event"><div class="report-head"><div><b>${esc(ev.event_name)}</b><small>${dateLabel(ev.event_date)} · ${esc(captainNames.get(cap?.captain_id)||'No captain')}</small></div><strong class="score">${f?Number(f.captain_rating).toFixed(1)+'/5':'Pending'}</strong></div>${f?`<div class="report-stats">Bar service: ${f.bar_service_rating}/5 · Captain: ${f.captain_rating}/5</div><p>${esc(f.comments||'No comments')}</p><small>${new Date(f.submitted_at).toLocaleString('en-IN')}</small>`:'<p class="muted">No guest feedback submitted yet · Checkout pending</p>'}</div>`;}).join('')||'No completed events.';
+ attendanceBox.className='';attendanceBox.innerHTML=completed.map(ev=>{
+  const people=staff.filter(x=>x.event_id===ev.id),records=att.filter(x=>x.event_id===ev.id),by=new Map(records.map(x=>[x.event_staff_id,x]));
+  const counts={present:0,late:0,half_day:0,absent:0};records.forEach(x=>{if(counts[x.status]!==undefined)counts[x.status]++;});
+  const rows=people.map(person=>{const rec=by.get(person.id),imgs=signed.get(person.id)||[];return `<div class="report-person"><div><b>${esc(person.staff_name)}</b><small>${esc(categoryName(person.staff_category))} · ${rec?esc(({present:'Present',absent:'Absent',late:'Late',half_day:'Half day'})[rec.status]||rec.status):'Not recorded'}${rec?.approved_by?' · Approved':' · Not approved'}</small></div><div class="report-photos">${imgs.length?imgs.map(url=>`<a href="${url}" target="_blank" rel="noopener"><img src="${url}" alt="Attendance photo" loading="lazy"></a>`).join(''):'<span class="muted">No photo</span>'}</div></div>`;}).join('');
+  return `<article class="report-event"><div class="report-head"><div><b>${esc(ev.event_name)}</b><small>${dateLabel(ev.event_date)} · ${esc(ev.venue||'Venue not set')}</small></div><span class="tag">${people.length} staff</span></div><div class="report-stats">Present ${counts.present} · Late ${counts.late} · Half day ${counts.half_day} · Absent ${counts.absent}</div>${rows||'<p class="muted">No staff roster recorded.</p>'}</article>`;
+ }).join('');
+ wageBox.className='';wageBox.innerHTML=completed.map(ev=>{const ew=wages.filter(x=>x.event_id===ev.id),total=ew.reduce((a,x)=>a+Number(x.amount||0),0),paid=ew.filter(x=>x.payment_status==='paid').reduce((a,x)=>a+Number(x.amount||0),0),pending=total-paid;const rows=ew.map(w=>{const person=staffById.get(w.event_staff_id);return `<div class="report-person"><div><b>${esc(person?.staff_name||'Staff record')}</b><small>${w.payment_status==='paid'?'Paid':'Pending'}</small></div><strong>${moneyINR(w.amount)}</strong></div>`;}).join('');return `<article class="report-event"><div class="report-head"><div><b>${esc(ev.event_name)}</b><small>${dateLabel(ev.event_date)}</small></div></div><div class="report-stats">Total ${moneyINR(total)} · Paid ${moneyINR(paid)} · Pending ${moneyINR(pending)}</div>${rows||'<p class="muted">No wage entries recorded.</p>'}</article>`;}).join('');
+ completedBox.className='';completedBox.innerHTML=completed.map(ev=>{const a=assign.find(x=>x.event_id===ev.id);return `<div class="event"><div><b>${esc(ev.event_name)}</b><small>${dateLabel(ev.event_date)} · ${esc(ev.venue||'Venue not set')} · ${ev.guest_count??0} guests</small><small>Captain: ${esc(captainNames.get(a?.captain_id)||'Not assigned')}</small></div><span class="tag">Completed</span></div>`;}).join('');
+}
+
+function moneyINR(value){return '₹'+Number(value||0).toLocaleString('en-IN',{maximumFractionDigits:2});}
+async function loadWages(eventId){
+ if(profile?.role!=='owner')return;
+ $('wageRoster').className='empty';$('wageRoster').textContent='Loading wages…';showError('wageNotice','');
+ const [staffRes,wageRes]=await Promise.all([
+  sb.from('event_staff').select('id,staff_name,staff_category').eq('event_id',eventId).order('created_at'),
+  sb.from('event_wages').select('id,event_staff_id,amount,payment_status,paid_at,notes').eq('event_id',eventId)
+ ]);
+ if(staffRes.error||wageRes.error){$('wageRoster').textContent=(staffRes.error||wageRes.error).message;return;}
+ const staff=staffRes.data||[],wages=new Map((wageRes.data||[]).map(w=>[w.event_staff_id,w]));
+ if(!staff.length){$('wageRoster').className='empty';$('wageRoster').textContent='Add event staff first to enter wages.';updateWageTotals();return;}
+ $('wageRoster').className='';
+ $('wageRoster').innerHTML=staff.map(person=>{
+  const wage=wages.get(person.id),amount=wage?.amount??'';
+  const status=wage?.payment_status==='paid'?'paid':'pending';
+  return `<div class="wage-row" data-wage-staff="${person.id}">
+   <div class="wage-person"><b>${esc(person.staff_name)}</b><div class="staff-meta">${esc(categoryName(person.staff_category))}</div></div>
+   <input type="number" min="0" step="0.01" inputmode="decimal" placeholder="₹ Wage" aria-label="Wage for ${esc(person.staff_name)}" data-wage-amount value="${esc(amount)}">
+   <select data-wage-status aria-label="Payment status for ${esc(person.staff_name)}"><option value="pending" ${status==='pending'?'selected':''}>Pending</option><option value="paid" ${status==='paid'?'selected':''}>Paid</option></select>
+  </div>`;
+ }).join('');
+ $('wageRoster').querySelectorAll('[data-wage-amount],[data-wage-status]').forEach(el=>el.addEventListener('input',updateWageTotals));
+ updateWageTotals();
+}
+function updateWageTotals(){
+ const rows=[...document.querySelectorAll('[data-wage-staff]')];
+ let total=0,paid=0;
+ rows.forEach(row=>{
+  const amount=Math.max(0,Number(row.querySelector('[data-wage-amount]').value)||0);
+  total+=amount;if(row.querySelector('[data-wage-status]').value==='paid')paid+=amount;
+ });
+ $('wageTotal').textContent=moneyINR(total);
+ $('wagePaid').textContent=moneyINR(paid);
+ $('wagePending').textContent=moneyINR(total-paid);
+}
+async function saveWages(){
+ if(profile?.role!=='owner'||!activeEvent)return;
+ const rows=[...document.querySelectorAll('[data-wage-staff]')];
+ const btn=$('saveWagesButton');btn.disabled=true;showError('wageNotice','Saving wages…');
+ try{
+  const payload=rows.filter(row=>row.querySelector('[data-wage-amount]').value.trim()!=='').map(row=>{
+   const amount=Number(row.querySelector('[data-wage-amount]').value);
+   if(!Number.isFinite(amount)||amount<0)throw Error('Enter a valid non-negative wage for every staff member.');
+   const payment_status=row.querySelector('[data-wage-status]').value;
+   return {event_id:activeEvent.id,event_staff_id:row.dataset.wageStaff,amount,payment_status,paid_at:payment_status==='paid'?new Date().toISOString():null,entered_by:profile.id,approved_by:profile.id};
+  });
+  if(!payload.length)throw Error('Enter at least one staff wage before saving.');
+  const {error}=await sb.from('event_wages').upsert(payload,{onConflict:'event_id,event_staff_id'});
+  if(error)throw error;
+  showError('wageNotice','Wages and payment statuses saved successfully.');
+  await loadWages(activeEvent.id);
+ }catch(e){showError('wageNotice',e.message||'Could not save wages.');}
+ finally{btn.disabled=false;}
+}
+
+if(!(await initPublicGuestFeedback()))init();
+</script>
+</body>
+</html>
