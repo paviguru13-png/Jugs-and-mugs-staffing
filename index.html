@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#11100e">
+<title>Jugs &amp; Mugs Staff Hub</title>
+<style>
+:root{color-scheme:dark;--bg:#10100f;--panel:#191816;--gold:#c9a45b;--gold2:#e5c77f;--muted:#aaa398;--line:#39352e;--white:#f7f3eb}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0%,#292318,transparent 48%),var(--bg);color:var(--white);font:15px/1.5 system-ui,sans-serif}.load{min-height:100vh;display:grid;place-items:center;padding:24px}.panel{width:min(100%,560px);padding:26px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}h1{font-size:21px;color:var(--gold2)}p{color:var(--muted)}#status{overflow-wrap:anywhere;color:var(--gold2);font-size:13px}
+</style>
+</head>
+<body>
+<main class="load"><section class="panel"><div style="color:#e5c77f;font-weight:800;letter-spacing:2px">JUGS &amp; MUGS</div><h1>Preparing Staff Hub</h1><p id="status">Loading your existing portal and applying the captain monthly wage update…</p></section></main>
+<script>
+(async()=>{
+ const status=document.getElementById('status');
+ const fail=(message)=>{status.textContent='Could not load the updated portal: '+message+'. Restore your previous index.html from GitHub history and contact support.'};
+ try{
+  const api='https://api.github.com/repos/paviguru13-png/Jugs-and-mugs-staffing/git/blobs/1764a4a712ba5dcc646dea71961b63542d8946c4';
+  const response=await fetch(api,{headers:{Accept:'application/vnd.github+json'}});
+  if(!response.ok)throw new Error('GitHub source request returned '+response.status);
+  const blob=await response.json();
+  if(blob.encoding!=='base64'||!blob.content)throw new Error('GitHub did not return the saved portal source');
+  const binary=atob(blob.content.replace(/\s/g,''));
+  const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));
+  let source=new TextDecoder('utf-8').decode(bytes);
+  const replaceOnce=(before,after,label)=>{
+   const first=source.indexOf(before);
+   if(first<0)throw new Error('Could not find '+label+' in the original portal source');
+   if(source.indexOf(before,first+before.length)>=0)throw new Error('Found more than one match for '+label);
+   source=source.slice(0,first)+after+source.slice(first+before.length);
+  };
+
+  replaceOnce(
+   '<section class="section owner-panel hidden" id="wageReportsSection"><h2>3. Wages &amp; payments</h2><p class="muted">Event-wise wage totals, paid amounts and pending balances.</p><div id="wageReportsList" class="empty">Loading wage reports…</div></section>',
+   '<section class="section owner-panel hidden" id="wageReportsSection"><h2>3. Wages &amp; payments</h2><p class="muted">Event-wise wage totals, paid amounts and pending balances.</p><div id="wageReportsList" class="empty">Loading wage reports…</div></section><section class="section owner-panel hidden" id="captainMonthlyWagesSection"><h2>4. Captain monthly payments</h2><p class="muted">Captain wages are entered against each event, then consolidated into one monthly payment per captain. Bartender and support-staff wages remain separate.</p><div id="captainMonthlyWagesList" class="empty">Loading captain monthly wages…</div></section>',
+   'owner monthly wage panel'
+  );
+
+  replaceOnce(
+   '<section class="section hidden" id="wagesSection"><h2>Staff wages &amp; payments</h2>',
+   '<section class="section hidden" id="captainEventWageSection"><h2>Captain event wage</h2><p class="muted">Enter the assigned captain’s wage for this event. It will be added to the captain’s monthly total.</p><div id="captainEventWageBody" class="empty">Loading captain assignment…</div><div class="notice" id="captainEventWageNotice"></div><button class="primary" id="saveCaptainEventWageButton">Save captain event wage</button></section><section class="section hidden" id="wagesSection"><h2>Staff wages &amp; payments</h2>',
+   'event captain wage form'
+  );
+
+  replaceOnce(
+   "reports:['captainRatingsSection','attendanceReportsSection','wageReportsSection','completedReportsSection','guestFeedbackReportsSection']",
+   "reports:['captainRatingsSection','attendanceReportsSection','wageReportsSection','captainMonthlyWagesSection','completedReportsSection','guestFeedbackReportsSection']",
+   'owner reports navigation'
+  );
+
+  replaceOnce(
+   "$('wagesSection').classList.toggle('hidden',profile.role!=='owner');if(profile.role==='owner')loadWages(v.id);",
+   "$('wagesSection').classList.toggle('hidden',profile.role!=='owner');$('captainEventWageSection').classList.toggle('hidden',profile.role!=='owner');if(profile.role==='owner'){loadWages(v.id);loadCaptainEventWage(v.id);}",
+   'event detail wage loading'
+  );
+
+  replaceOnce(
+   "if(owner){await loadCaptains();await loadCaptainRatings();await loadOwnerReports()}}",
+   "if(owner){await loadCaptains();await loadCaptainRatings();await loadOwnerReports();await loadCaptainMonthlyWages()}}",
+   'owner dashboard monthly wage loading'
+  );
+
+  replaceOnce(
+   "$('saveWagesButton').addEventListener('click',saveWages);",
+   "$('saveWagesButton').addEventListener('click',saveWages);$('saveCaptainEventWageButton').addEventListener('click',saveCaptainEventWage);",
+   'captain wage save button listener'
+  );
+
+  const insertBefore='async function loadWages(eventId)';
+  const i=source.indexOf(insertBefore);
+  if(i<0||source.indexOf(insertBefore,i+insertBefore.length)>=0)throw new Error('Could not safely locate the wage functions insertion point');
+
+  const addedFunctions=`
+async function loadCaptainEventWage(eventId){
+ const box=$('captainEventWageBody');box.className='empty';box.textContent='Loading captain assignment…';showError('captainEventWageNotice','');
+ const [aRes,cRes,wRes]=await Promise.all([sb.from('event_assignments').select('captain_id').eq('event_id',eventId).maybeSingle(),sb.from('staff_profiles').select('id,full_name,employee_id').eq('role','captain').eq('is_active',true).order('full_name'),sb.from('captain_event_wages').select('captain_id,amount').eq('event_id',eventId)]);
+ if(aRes.error||cRes.error||wRes.error){box.textContent=(aRes.error||cRes.error||wRes.error).message;return}
+ const captain=aRes.data?(cRes.data||[]).find(x=>x.id===aRes.data.captain_id):null;
+ if(!captain){box.textContent='No captain is assigned to this event. Assign a captain first.';$('saveCaptainEventWageButton').disabled=true;delete box.dataset.captainId;return}
+ $('saveCaptainEventWageButton').disabled=false;const wage=(wRes.data||[]).find(x=>x.captain_id===captain.id);
+ box.className='';box.innerHTML='<div class="wage-row"><div class="wage-person"><b>'+esc(captain.full_name)+'</b><div class="staff-meta">'+esc(captain.employee_id||'Captain')+'</div></div><input id="captainEventWageAmount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="₹ Event wage" value="'+esc(wage?.amount??'')+'" aria-label="Captain event wage"></div>';
+ box.dataset.captainId=captain.id;
+}
+async function saveCaptainEventWage(){
+ if(profile?.role!=='owner'||!activeEvent)return;const box=$('captainEventWageBody'),captainId=box.dataset.captainId,input=$('captainEventWageAmount'),btn=$('saveCaptainEventWageButton');
+ if(!captainId||!input){showError('captainEventWageNotice','Assign a captain before entering the wage.');return}
+ const amount=Number(input.value);if(input.value.trim()===''||!Number.isFinite(amount)||amount<0){showError('captainEventWageNotice','Enter a valid non-negative captain wage.');return}
+ btn.disabled=true;showError('captainEventWageNotice','Saving captain event wage…');
+ try{const {error}=await sb.from('captain_event_wages').upsert({event_id:activeEvent.id,captain_id:captainId,amount,entered_by:profile.id,updated_at:new Date().toISOString()},{onConflict:'event_id,captain_id'});if(error)throw error;showError('captainEventWageNotice','Captain event wage saved. It is included in the monthly total.');await loadCaptainMonthlyWages()}catch(e){showError('captainEventWageNotice',e.message||'Could not save captain wage.')}finally{btn.disabled=false}
+}
+async function loadCaptainMonthlyWages(){
+ const box=$('captainMonthlyWagesList');if(!box)return;box.className='empty';box.textContent='Loading captain monthly wages…';
+ const [wRes,pRes,cRes,eRes]=await Promise.all([sb.from('captain_event_wages').select('event_id,captain_id,amount'),sb.from('captain_monthly_payments').select('id,captain_id,pay_month,amount,payment_status,paid_at'),sb.from('staff_profiles').select('id,full_name,employee_id').eq('role','captain'),sb.from('events').select('id,event_name,event_date,status')]);
+ const err=[wRes,pRes,cRes,eRes].find(x=>x.error);if(err){box.textContent='Could not load captain monthly wages: '+err.error.message;return}
+ const captains=cRes.data||[],events=new Map((eRes.data||[]).map(x=>[x.id,x])),payments=new Map((pRes.data||[]).map(x=>[x.captain_id+'|'+x.pay_month,x])),grouped=new Map();
+ (wRes.data||[]).forEach(w=>{const ev=events.get(w.event_id);if(!ev||ev.status==='cancelled')return;const month=ev.event_date.slice(0,7)+'-01',key=w.captain_id+'|'+month;if(!grouped.has(key))grouped.set(key,{captain_id:w.captain_id,month,amount:0,events:[]});const g=grouped.get(key);g.amount+=Number(w.amount||0);g.events.push(ev.event_name)});
+ if(!grouped.size){box.textContent='No captain event wages entered yet.';return}
+ const rows=[...grouped.values()].sort((a,b)=>b.month.localeCompare(a.month)||String(a.captain_id).localeCompare(b.captain_id));
+ box.className='';box.innerHTML=rows.map(g=>{const c=captains.find(x=>x.id===g.captain_id),p=payments.get(g.captain_id+'|'+g.month),paid=p?.payment_status==='paid',dateId='captainPaidDate_'+g.captain_id+'_'+g.month;return '<div class="event" style="display:block;margin-bottom:12px"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start"><div><b>'+esc(c?.full_name||'Captain')+'</b><small>'+esc(c?.employee_id||'')+' · '+new Date(g.month+'T00:00:00').toLocaleDateString('en-IN',{month:'long',year:'numeric'})+'</small><small>'+g.events.length+' event wage entr'+(g.events.length===1?'y':'ies')+': '+esc(g.events.join(', '))+'</small></div><div style="text-align:right"><b>'+moneyINR(g.amount)+'</b><small>'+(paid?'Paid':'Pending')+'</small></div></div><div class="staff-tools" style="margin-top:10px;align-items:center"><input type="date" id="'+dateId+'" value="'+(p?.paid_at?new Date(p.paid_at).toISOString().slice(0,10):new Date().toISOString().slice(0,10))+'" aria-label="Payment date" style="max-width:170px"><button class="action" data-captain-pay="'+g.captain_id+'" data-pay-month="'+g.month+'" data-pay-amount="'+g.amount+'">'+(paid?'Update paid date':'Mark month paid')+'</button>'+(paid?'<small>Paid on '+new Date(p.paid_at).toLocaleDateString('en-IN')+'</small>':'')+'</div></div>'}).join('');
+ box.querySelectorAll('[data-captain-pay]').forEach(btn=>btn.addEventListener('click',async()=>{const id=btn.dataset.captainPay,month=btn.dataset.payMonth,amount=Number(btn.dataset.payAmount),date=$('captainPaidDate_'+id+'_'+month).value;if(!date){alert('Select the payment date.');return}btn.disabled=true;const paidAt=new Date(date+'T12:00:00').toISOString();const {error}=await sb.from('captain_monthly_payments').upsert({captain_id:id,pay_month:month,amount,payment_status:'paid',paid_at:paidAt,paid_by:profile.id,updated_at:new Date().toISOString()},{onConflict:'captain_id,pay_month'});if(error){alert('Could not save payment: '+error.message);btn.disabled=false;return}await loadCaptainMonthlyWages()}));
+}
+`;
+  source=source.slice(0,i)+addedFunctions+'\n'+source.slice(i);
+  if(!source.includes('async function loadCaptainEventWage')||!source.includes('async function loadCaptainMonthlyWages'))throw new Error('The captain wage functions were not inserted');
+  document.open();
+  document.write(source);
+  document.close();
+ }catch(error){fail(error?.message||String(error))}
+})();
+</script>
+</body>
+</html>
